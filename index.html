@@ -386,6 +386,59 @@ body {
 
 .close-btn:hover { transform: rotate(90deg) scale(1.1); }
 
+/* Detail nav buttons (prev/next + random) */
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  border: 2px solid #eee;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 1.3rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: transform 0.15s, box-shadow 0.15s;
+  color: #555;
+  font-family: var(--font-body);
+}
+.nav-btn:hover {
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+}
+.nav-btn:active { transform: translateY(-50%) scale(0.92); }
+
+.nav-prev { left: -24px; }
+.nav-next { right: -24px; }
+
+.random-btn {
+  background: white;
+  color: #333;
+  border: 2px solid #eee;
+  border-radius: 100px;
+  padding: 0.6rem 1.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-body);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  margin-top: 1rem;
+  transition: transform 0.15s;
+}
+.random-btn:hover { transform: scale(1.05); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+.random-btn:active { transform: scale(0.95); }
+
+@media (max-width: 600px) {
+  .nav-prev { left: -16px; }
+  .nav-next { right: -16px; }
+  .nav-btn { width: 40px; height: 40px; font-size: 1.1rem; }
+}
+
 /* ---- Play Mode (Game) ---- */
 #play-screen {
   align-items: center;
@@ -664,12 +717,15 @@ body {
 <!-- Detail overlay -->
 <div class="detail-overlay" id="detail-overlay" onclick="closeDetail(event)">
   <div class="detail-card" id="detail-card">
-    <button class="close-btn" onclick="closeDetail()">✕</button>
+    <button class="close-btn" onclick="closeDetail()" title="Close">✕</button>
+    <button class="nav-btn nav-prev" onclick="navPrev()" title="Previous letter" aria-label="Previous letter">◀</button>
+    <button class="nav-btn nav-next" onclick="navNext()" title="Next letter" aria-label="Next letter">▶</button>
     <div class="detail-letter" id="detail-letter"></div>
     <span class="detail-animal" id="detail-animal"></span>
     <div class="detail-name" id="detail-name"></div>
     <div class="detail-phrase" id="detail-phrase"></div>
     <button class="speak-btn" onclick="speakCurrent()">🔊 Hear it again!</button>
+    <button class="random-btn" onclick="navRandom()" title="Random letter" aria-label="Random letter">🎲 Random</button>
   </div>
 </div>
 
@@ -807,7 +863,8 @@ function createBubbles() {
 createBubbles();
 
 // ===== LEARN MODE =====
-let currentDetailItem = null;
+let currentDetailIndex = 0;
+const N = ALPHABET.length;
 
 function initLearn() {
   const grid = document.getElementById('letter-grid');
@@ -822,13 +879,14 @@ function initLearn() {
       <span class="animal-emoji">${item.emoji}</span>
       <div class="animal-name">${item.animal}</div>
     `;
-    card.onclick = () => openDetail(item);
+    card.onclick = () => openDetail(i);
     grid.appendChild(card);
   });
 }
 
-function openDetail(item) {
-  currentDetailItem = item;
+function openDetail(index) {
+  currentDetailIndex = ((index % N) + N) % N;
+  const item = ALPHABET[currentDetailIndex];
   document.getElementById('detail-letter').innerHTML =
     `${item.letter}<span class="lower">${item.letter.toLowerCase()}</span>`;
   document.getElementById('detail-letter').style.color = item.color;
@@ -839,6 +897,21 @@ function openDetail(item) {
   speakLetterAndAnimal(item);
 }
 
+function navPrev() {
+  openDetail(currentDetailIndex - 1);
+}
+
+function navNext() {
+  openDetail(currentDetailIndex + 1);
+}
+
+function navRandom() {
+  if (N <= 1) return;
+  let idx;
+  do { idx = Math.floor(Math.random() * N); } while (idx === currentDetailIndex);
+  openDetail(idx);
+}
+
 function closeDetail(e) {
   if (e && e.target !== document.getElementById('detail-overlay')) return;
   document.getElementById('detail-overlay').classList.remove('show');
@@ -846,7 +919,7 @@ function closeDetail(e) {
 }
 
 function speakCurrent() {
-  if (currentDetailItem) speakLetterAndAnimal(currentDetailItem);
+  speakLetterAndAnimal(ALPHABET[currentDetailIndex]);
 }
 
 // ===== GAME MODE =====
