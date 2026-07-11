@@ -26,7 +26,7 @@ html, body {
 }
 
 body {
-  background: linear-gradient(135deg, #FFF3E0 0%, #FFE4F0 25%, #E0F7FA 50%, #F1FFE0 75%, #FFFDE7 100%);
+  background: linear-gradient(135deg, #E8F4FF 0%, #D6EAF8 20%, #EBF5FB 40%, #E8F8F5 60%, #F0F8FF 80%, #E3F2FD 100%);
   background-size: 400% 400%;
   animation: bgShift 20s ease-in-out infinite;
   position: relative;
@@ -38,21 +38,49 @@ body {
   50% { background-position: 100% 50%; }
 }
 
-/* Floating background bubbles */
-.bubble {
+/* Falling snowflakes */
+.snowflake {
   position: fixed;
-  border-radius: 50%;
-  opacity: 0.35;
   pointer-events: none;
   z-index: 0;
-  animation: floatUp linear infinite;
+  color: #B0D4F1;
+  text-shadow: 0 0 6px rgba(176,212,241,0.5);
+  animation: snowFall linear infinite;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-@keyframes floatUp {
-  0% { transform: translateY(100vh) scale(0.8); opacity: 0; }
-  10% { opacity: 0.35; }
-  90% { opacity: 0.2; }
-  100% { transform: translateY(-20vh) scale(1.2); opacity: 0; }
+@keyframes snowFall {
+  0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 0.8; }
+  100% { transform: translateY(110vh) translateX(var(--drift, 50px)) rotate(360deg); opacity: 0; }
+}
+
+/* Princess characters on home screen */
+.princess-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1rem;
+  margin: 1rem 0;
+  position: relative;
+  z-index: 1;
+}
+
+.princess-img {
+  width: clamp(80px, 15vw, 140px);
+  height: auto;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
+  animation: princessFloat 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.princess-img.right { animation-delay: 1.5s; }
+
+@keyframes princessFloat {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-8px) rotate(2deg); }
 }
 
 /* Twemoji image base style */
@@ -165,6 +193,7 @@ body {
 }
 
 .mode-btn:nth-child(2) .icon { animation-delay: 0.3s; }
+.mode-btn:nth-child(3) .icon { animation-delay: 0.6s; }
 
 @keyframes iconBounce {
   0%, 100% { transform: translateY(0) scale(1); }
@@ -706,6 +735,104 @@ body {
 .play-again-btn:hover { transform: scale(1.05); }
 .play-again-btn:active { transform: translateY(2px); box-shadow: 0 3px 0 #4a9a57; }
 
+/* ---- Match Mode (Upper-Lower Case Connection) ---- */
+.mode-btn.match { border-top: 6px solid #9D4EDD; }
+
+#match-screen { align-items: center; }
+
+.match-area {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 1rem 2rem 3rem; width: 100%; max-width: 600px; position: relative;
+}
+
+.match-prompt {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 4vw, 1.8rem); color: #333;
+  text-align: center; margin-bottom: 0.5rem;
+}
+
+.match-hint {
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem); color: #888;
+  margin-bottom: 1.5rem; text-align: center;
+}
+
+.match-progress {
+  display: flex; gap: 6px; margin-bottom: 1.5rem; flex-wrap: wrap; justify-content: center;
+}
+
+.match-progress-dot {
+  width: 10px; height: 10px; border-radius: 50%; background: #ddd; transition: all 0.3s;
+}
+
+.match-progress-dot.done { background: #6BCB77; transform: scale(1.3); }
+
+.match-board {
+  display: flex; justify-content: space-between; gap: 3rem;
+  position: relative; width: 100%; max-width: 500px; min-height: 400px;
+}
+
+.match-column { display: flex; flex-direction: column; gap: 1rem; z-index: 2; }
+
+.match-node {
+  width: 70px; height: 70px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 2.2rem; cursor: pointer;
+  user-select: none; -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent; touch-action: none;
+  box-shadow: var(--shadow-toy), var(--shadow-soft);
+  transition: transform 0.2s; position: relative;
+}
+
+.match-node:hover { transform: scale(1.1); }
+.match-node.upper { background: white; color: #333; border: 3px solid #4D96FF; }
+.match-node.lower { background: white; color: #333; border: 3px solid #FF6B6B; }
+
+.match-node.matched {
+  background: #6BCB77 !important; color: white !important;
+  border-color: #4a9a57 !important; pointer-events: none;
+  animation: matchPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes matchPop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+
+.match-node.wrong-flash { animation: wrongFlash 0.5s; }
+
+@keyframes wrongFlash {
+  0%, 100% { background: white; }
+  30%, 70% { background: #FF6B6B; color: white; }
+}
+
+.match-node .checkmark {
+  position: absolute; top: -6px; right: -6px;
+  width: 24px; height: 24px; background: #6BCB77; border-radius: 50%;
+  display: none; align-items: center; justify-content: center;
+  font-size: 0.8rem; color: white;
+}
+
+.match-node.matched .checkmark { display: flex; }
+
+.match-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+.match-svg line { stroke-linecap: round; }
+
+.match-line-correct { stroke: #6BCB77; stroke-width: 5; opacity: 0.8; }
+.match-line-wrong { stroke: #FF6B6B; stroke-width: 5; opacity: 0.8; animation: lineFadeOut 0.5s forwards; }
+
+@keyframes lineFadeOut { 0% { opacity: 0.8; } 100% { opacity: 0; } }
+
+.match-line-drawing { stroke: #4D96FF; stroke-width: 4; stroke-dasharray: 8 6; opacity: 0.7; }
+
+.match-next-btn {
+  background: #9D4EDD; color: white; border: none; border-radius: 100px;
+  padding: 1rem 2.5rem; font-family: var(--font-display); font-size: 1.4rem;
+  cursor: pointer; box-shadow: 0 5px 0 #7a3eb5, var(--shadow-soft);
+  transition: transform 0.15s; margin-top: 1.5rem; display: none;
+}
+
+.match-next-btn.show { display: block; animation: resultPop 0.4s; }
+.match-next-btn:hover { transform: scale(1.05); }
+.match-next-btn:active { transform: translateY(2px); box-shadow: 0 3px 0 #7a3eb5; }
+
 /* Responsive */
 @media (max-width: 600px) {
   .mode-buttons { gap: 1rem; }
@@ -725,6 +852,10 @@ body {
   <div class="home-content">
     <h1 class="home-title">ABC Animals!</h1>
     <p class="home-subtitle"><span class="parrot" id="parrot-emoji"></span> Let's learn our letters together!</p>
+    <div class="princess-container">
+      <img src="elsa.png" class="princess-img" alt="Elsa" onerror="this.style.display='none'">
+      <img src="anna.png" class="princess-img right" alt="Anna" onerror="this.style.display='none'">
+    </div>
     <div class="mode-buttons">
       <button class="mode-btn learn" onclick="showScreen('learn-screen')">
         <span class="icon" id="icon-learn"></span>
@@ -735,6 +866,11 @@ body {
         <span class="icon" id="icon-play"></span>
         <span class="label">Play</span>
         <span class="desc">Match letters & animals</span>
+      </button>
+      <button class="mode-btn match" onclick="showScreen('match-screen')">
+        <span class="icon" id="icon-match"></span>
+        <span class="label">Match</span>
+        <span class="desc">Connect big & small letters</span>
       </button>
     </div>
   </div>
@@ -791,6 +927,28 @@ body {
     <div class="final-score" id="final-score">0 / 10</div>
     <p>Great job, little learner!</p>
     <button class="play-again-btn" onclick="restartGame()" id="play-again-btn">Play Again</button>
+  </div>
+</div>
+
+<!-- ============ MATCH SCREEN ============ -->
+<div class="screen" id="match-screen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="endMatchGame(); showScreen('home-screen')" title="Back" id="back-btn-match"></button>
+    <span class="screen-title">Match Letters</span>
+    <div style="width:56px"></div>
+  </div>
+  <div class="match-area" id="match-area"></div>
+</div>
+
+<!-- Match finished overlay -->
+<div class="game-finished" id="match-finished">
+  <div class="finished-card">
+    <span class="trophy" id="match-trophy-emoji"></span>
+    <h2>Amazing!</h2>
+    <p>You matched all the letters!</p>
+    <div class="final-score" id="match-final-score">0 / 24</div>
+    <p>You're a letter champion!</p>
+    <button class="play-again-btn" onclick="restartMatchGame()" id="match-play-again-btn">Play Again</button>
   </div>
 </div>
 
@@ -864,6 +1022,7 @@ const EMOJI_ICONS = {
   close: '2715',
   prev: '25c0',
   next: '25b6',
+  link: '1f517',
 };
 
 // ===== Screen Navigation =====
@@ -872,6 +1031,7 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
   if (id === 'learn-screen') initLearn();
   if (id === 'play-screen') initGame();
+  if (id === 'match-screen') initMatchGame();
 }
 
 // ===== TTS: Local MP3 (letters) + Web Speech API (dynamic phrases) =====
@@ -944,9 +1104,7 @@ function stopSpeech() {
   if ('speechSynthesis' in window) speechSynthesis.cancel();
 }
 function testVoice() {
-  currentAudio = new Audio('audio/F.mp3');
-  currentAudio.onended = () => { currentAudio = null; };
-  currentAudio.play().catch(() => {});
+  speak('Hello! This is my voice!', 0.85, 1.2);
 }
 
 
@@ -954,24 +1112,24 @@ function speakLetterAndAnimal(item) {
   speakLetter(item);
 }
 
-// ===== Bubbles Background =====
-function createBubbles() {
+// ===== Snowflakes Background =====
+function createSnowflakes() {
   const container = document.getElementById('bubbles');
-  const colors = ['#FF6B6B','#FFD93D','#6BCB77','#4D96FF','#9D4EDD','#FF6B9D'];
-  for (let i = 0; i < 15; i++) {
-    const b = document.createElement('div');
-    b.className = 'bubble';
-    const size = 30 + Math.random() * 80;
-    b.style.width = size + 'px';
-    b.style.height = size + 'px';
-    b.style.background = colors[i % colors.length];
-    b.style.left = Math.random() * 100 + 'vw';
-    b.style.animationDuration = (15 + Math.random() * 20) + 's';
-    b.style.animationDelay = (Math.random() * 20) + 's';
-    container.appendChild(b);
+  const flakes = ['\u2744', '\u2745', '\u2746', '\u2744', '\u2745'];
+  for (let i = 0; i < 30; i++) {
+    const s = document.createElement('div');
+    s.className = 'snowflake';
+    s.textContent = flakes[Math.floor(Math.random() * flakes.length)];
+    s.style.fontSize = (12 + Math.random() * 28) + 'px';
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.animationDuration = (8 + Math.random() * 12) + 's';
+    s.style.animationDelay = (Math.random() * 10) + 's';
+    s.style.setProperty('--drift', (Math.random() * 200 - 100) + 'px');
+    s.style.opacity = 0.4 + Math.random() * 0.5;
+    container.appendChild(s);
   }
 }
-createBubbles();
+createSnowflakes();
 
 // ===== Render UI Emoji Icons =====
 function renderStaticEmojis() {
@@ -979,19 +1137,23 @@ function renderStaticEmojis() {
   document.getElementById('parrot-emoji').innerHTML = emojiImg(EMOJI_ICONS.parrot, '1.5em');
   document.getElementById('icon-learn').innerHTML = emojiImg(EMOJI_ICONS.book, '1em');
   document.getElementById('icon-play').innerHTML = emojiImg(EMOJI_ICONS.game, '1em');
+  document.getElementById('icon-match').innerHTML = emojiImg(EMOJI_ICONS.link, '1em');
 
   // Back buttons (use arrow character, no emoji needed)
   document.getElementById('back-btn-learn').innerHTML = '&#8592;';
   document.getElementById('back-btn-play').innerHTML = '&#8592;';
+  document.getElementById('back-btn-match').innerHTML = '&#8592;';
 
   // Speak button
   document.getElementById('speak-btn-detail').innerHTML = emojiImg(EMOJI_ICONS.speaker, '1.1em') + ' Hear it again!';
 
   // Trophy
   document.getElementById('trophy-emoji').innerHTML = emojiImg(EMOJI_ICONS.trophy, '1em');
+  document.getElementById('match-trophy-emoji').innerHTML = emojiImg(EMOJI_ICONS.trophy, '1em');
 
   // Play again button
   document.getElementById('play-again-btn').innerHTML = emojiImg(EMOJI_ICONS.game, '1em') + ' Play Again';
+  document.getElementById('match-play-again-btn').innerHTML = emojiImg(EMOJI_ICONS.game, '1em') + ' Play Again';
 }
 renderStaticEmojis();
 
@@ -1179,6 +1341,223 @@ function endGame() {
   stopSpeech();
 }
 
+// ===== MATCH MODE (Upper-Lower Case Connection Game) =====
+let matchRound = 0;
+let matchScore = 0;
+const MATCH_TOTAL_ROUNDS = 4;
+const MATCH_PER_ROUND = 6;
+let matchLetters = [];
+let matchSelected = null;
+let matchDrawLine = null;
+let matchMoveHandler = null;
+let matchUpHandler = null;
+
+function initMatchGame() {
+  matchRound = 0;
+  matchScore = 0;
+  const shuffled = [...ALPHABET].sort(() => Math.random() - 0.5);
+  matchLetters = [];
+  for (let r = 0; r < MATCH_TOTAL_ROUNDS; r++) {
+    matchLetters.push(shuffled.slice(r * MATCH_PER_ROUND, (r + 1) * MATCH_PER_ROUND));
+  }
+  setupMatchRound();
+}
+
+function setupMatchRound() {
+  const letters = matchLetters[matchRound];
+  const lowerShuffled = [...letters].sort(() => Math.random() - 0.5);
+
+  let progressHTML = '';
+  for (let i = 0; i < MATCH_TOTAL_ROUNDS; i++) {
+    progressHTML += `<div class="match-progress-dot${i < matchRound ? ' done' : ''}"></div>`;
+  }
+
+  const area = document.getElementById('match-area');
+  area.innerHTML = `
+    <div class="match-prompt">Round ${matchRound + 1} of ${MATCH_TOTAL_ROUNDS}</div>
+    <div class="match-hint">Draw a line to match the big and small letters!</div>
+    <div class="match-progress">${progressHTML}</div>
+    <div class="match-board" id="match-board">
+      <svg class="match-svg" id="match-svg"></svg>
+      <div class="match-column" id="match-upper"></div>
+      <div class="match-column" id="match-lower"></div>
+    </div>
+    <button class="match-next-btn" id="match-next-btn" onclick="nextMatchRound()">Next Round &#10142;</button>
+  `;
+
+  const upperCol = document.getElementById('match-upper');
+  const lowerCol = document.getElementById('match-lower');
+
+  letters.forEach(item => {
+    const node = document.createElement('div');
+    node.className = 'match-node upper';
+    node.dataset.letter = item.letter;
+    node.innerHTML = item.letter + '<span class="checkmark">&#10003;</span>';
+    node.style.color = item.color;
+    node.style.borderColor = item.color;
+    upperCol.appendChild(node);
+    node.addEventListener('pointerdown', (e) => startMatchDrag(e, node));
+  });
+
+  lowerShuffled.forEach(item => {
+    const node = document.createElement('div');
+    node.className = 'match-node lower';
+    node.dataset.letter = item.letter;
+    node.innerHTML = item.letter.toLowerCase() + '<span class="checkmark">&#10003;</span>';
+    node.style.color = item.color;
+    node.style.borderColor = item.color;
+    lowerCol.appendChild(node);
+  });
+}
+
+function startMatchDrag(e, node) {
+  if (node.classList.contains('matched')) return;
+  e.preventDefault();
+  node.setPointerCapture(e.pointerId);
+
+  const svg = document.getElementById('match-svg');
+  const board = document.getElementById('match-board');
+  const boardRect = board.getBoundingClientRect();
+  const nodeRect = node.getBoundingClientRect();
+
+  const x1 = nodeRect.left + nodeRect.width / 2 - boardRect.left;
+  const y1 = nodeRect.top + nodeRect.height / 2 - boardRect.top;
+
+  matchDrawLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  matchDrawLine.setAttribute('x1', x1);
+  matchDrawLine.setAttribute('y1', y1);
+  matchDrawLine.setAttribute('x2', x1);
+  matchDrawLine.setAttribute('y2', y1);
+  matchDrawLine.classList.add('match-line-drawing');
+  svg.appendChild(matchDrawLine);
+
+  matchSelected = node;
+
+  matchMoveHandler = (ev) => updateMatchDrag(ev);
+  matchUpHandler = (ev) => endMatchDrag(ev);
+
+  document.addEventListener('pointermove', matchMoveHandler);
+  document.addEventListener('pointerup', matchUpHandler);
+  document.addEventListener('pointercancel', matchUpHandler);
+}
+
+function updateMatchDrag(e) {
+  if (!matchDrawLine || !matchSelected) return;
+  const board = document.getElementById('match-board');
+  const boardRect = board.getBoundingClientRect();
+  const x2 = e.clientX - boardRect.left;
+  const y2 = e.clientY - boardRect.top;
+  matchDrawLine.setAttribute('x2', x2);
+  matchDrawLine.setAttribute('y2', y2);
+}
+
+function endMatchDrag(e) {
+  document.removeEventListener('pointermove', matchMoveHandler);
+  document.removeEventListener('pointerup', matchUpHandler);
+  document.removeEventListener('pointercancel', matchUpHandler);
+
+  if (!matchDrawLine || !matchSelected) return;
+
+  const elem = document.elementFromPoint(e.clientX, e.clientY);
+  const lowerNode = elem ? elem.closest('.match-node.lower') : null;
+
+  if (lowerNode && !lowerNode.classList.contains('matched')) {
+    if (lowerNode.dataset.letter === matchSelected.dataset.letter) {
+      handleCorrectMatch(matchSelected, lowerNode);
+    } else {
+      handleWrongMatch(matchSelected, lowerNode);
+    }
+  }
+
+  if (matchDrawLine && matchDrawLine.parentNode) {
+    matchDrawLine.remove();
+  }
+  matchDrawLine = null;
+  matchSelected = null;
+  matchMoveHandler = null;
+  matchUpHandler = null;
+}
+
+function handleCorrectMatch(upperNode, lowerNode) {
+  const svg = document.getElementById('match-svg');
+  const board = document.getElementById('match-board');
+  const boardRect = board.getBoundingClientRect();
+  const upperRect = upperNode.getBoundingClientRect();
+  const lowerRect = lowerNode.getBoundingClientRect();
+
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line.setAttribute('x1', upperRect.left + upperRect.width / 2 - boardRect.left);
+  line.setAttribute('y1', upperRect.top + upperRect.height / 2 - boardRect.top);
+  line.setAttribute('x2', lowerRect.left + lowerRect.width / 2 - boardRect.left);
+  line.setAttribute('y2', lowerRect.top + lowerRect.height / 2 - boardRect.top);
+  line.classList.add('match-line-correct');
+  svg.appendChild(line);
+
+  upperNode.classList.add('matched');
+  lowerNode.classList.add('matched');
+
+  matchScore++;
+  const item = ALPHABET.find(a => a.letter === upperNode.dataset.letter);
+  if (item) speak(`Yes! ${item.letter} matches ${item.letter.toLowerCase()}!`, 0.9, 1.3);
+
+  const remaining = document.querySelectorAll('.match-node:not(.matched)').length;
+  if (remaining === 0) {
+    if (matchRound < MATCH_TOTAL_ROUNDS - 1) {
+      document.getElementById('match-next-btn').classList.add('show');
+      speak('Round complete! Great job!', 0.9, 1.3);
+    } else {
+      setTimeout(() => showMatchFinished(), 600);
+    }
+  }
+}
+
+function handleWrongMatch(upperNode, lowerNode) {
+  upperNode.classList.add('wrong-flash');
+  lowerNode.classList.add('wrong-flash');
+  setTimeout(() => {
+    upperNode.classList.remove('wrong-flash');
+    lowerNode.classList.remove('wrong-flash');
+  }, 500);
+
+  const svg = document.getElementById('match-svg');
+  const board = document.getElementById('match-board');
+  const boardRect = board.getBoundingClientRect();
+  const upperRect = upperNode.getBoundingClientRect();
+  const lowerRect = lowerNode.getBoundingClientRect();
+
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line.setAttribute('x1', upperRect.left + upperRect.width / 2 - boardRect.left);
+  line.setAttribute('y1', upperRect.top + upperRect.height / 2 - boardRect.top);
+  line.setAttribute('x2', lowerRect.left + lowerRect.width / 2 - boardRect.left);
+  line.setAttribute('y2', lowerRect.top + lowerRect.height / 2 - boardRect.top);
+  line.classList.add('match-line-wrong');
+  svg.appendChild(line);
+  setTimeout(() => line.remove(), 500);
+
+  speak('Try again!', 0.85, 1.0);
+}
+
+function nextMatchRound() {
+  matchRound++;
+  setupMatchRound();
+}
+
+function showMatchFinished() {
+  document.getElementById('match-final-score').textContent = `${matchScore} / ${MATCH_TOTAL_ROUNDS * MATCH_PER_ROUND}`;
+  document.getElementById('match-finished').classList.add('show');
+  speak(`Amazing! You matched ${matchScore} pairs!`, 0.9, 1.3);
+}
+
+function endMatchGame() {
+  document.getElementById('match-finished').classList.remove('show');
+  stopSpeech();
+}
+
+function restartMatchGame() {
+  document.getElementById('match-finished').classList.remove('show');
+  initMatchGame();
+}
+
 // ===== Keyboard support =====
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
@@ -1189,13 +1568,14 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ===== Initialize voice status =====
-// Test online TTS availability on load (silently)
 setTimeout(() => {
   if (ttsMode === 'unknown') {
-    // Try a quick check
-    fetch(`${ONLINE_TTS_URL}?voice=${ONLINE_TTS_VOICE}&text=hi`, { method: 'HEAD' })
-      .then(() => { ttsMode = 'online'; updateVoiceBadge(); })
-      .catch(() => { ttsMode = 'local'; updateVoiceBadge(); });
+    if ('speechSynthesis' in window && pickBestVoice()) {
+      ttsMode = 'local';
+    } else {
+      ttsMode = 'fallback';
+    }
+    updateVoiceBadge();
   }
 }, 2000);
 </script>
