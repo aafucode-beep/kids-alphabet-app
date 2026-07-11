@@ -722,6 +722,212 @@ body {
 .play-again-btn:hover { transform: scale(1.05); }
 .play-again-btn:active { transform: translateY(2px); box-shadow: 0 3px 0 #4a9a57; }
 
+/* ---- Match Mode (Upper-Lower Case Connection) ---- */
+.mode-btn.match { border-top: 6px solid #9D4EDD; }
+
+#match-screen {
+  align-items: center;
+}
+
+.match-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem 3rem;
+  width: 100%;
+  max-width: 600px;
+  position: relative;
+}
+
+.match-prompt {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
+  color: #333;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.match-hint {
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  color: #888;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.match-progress {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.match-progress-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ddd;
+  transition: all 0.3s;
+}
+
+.match-progress-dot.done {
+  background: #6BCB77;
+  transform: scale(1.3);
+}
+
+.match-board {
+  display: flex;
+  justify-content: space-between;
+  gap: 3rem;
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  min-height: 400px;
+}
+
+.match-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  z-index: 2;
+}
+
+.match-node {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  box-shadow: var(--shadow-toy), var(--shadow-soft);
+  transition: transform 0.2s;
+  position: relative;
+}
+
+.match-node:hover {
+  transform: scale(1.1);
+}
+
+.match-node.upper {
+  background: white;
+  color: #333;
+  border: 3px solid #4D96FF;
+}
+
+.match-node.lower {
+  background: white;
+  color: #333;
+  border: 3px solid #FF6B6B;
+}
+
+.match-node.matched {
+  background: #6BCB77 !important;
+  color: white !important;
+  border-color: #4a9a57 !important;
+  pointer-events: none;
+  animation: matchPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes matchPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.match-node.wrong-flash {
+  animation: wrongFlash 0.5s;
+}
+
+@keyframes wrongFlash {
+  0%, 100% { background: white; }
+  30%, 70% { background: #FF6B6B; color: white; }
+}
+
+.match-node .checkmark {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 24px;
+  height: 24px;
+  background: #6BCB77;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: white;
+}
+
+.match-node.matched .checkmark {
+  display: flex;
+}
+
+.match-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.match-svg line {
+  stroke-linecap: round;
+}
+
+.match-line-correct {
+  stroke: #6BCB77;
+  stroke-width: 5;
+  opacity: 0.8;
+}
+
+.match-line-wrong {
+  stroke: #FF6B6B;
+  stroke-width: 5;
+  opacity: 0.8;
+  animation: lineFadeOut 0.5s forwards;
+}
+
+@keyframes lineFadeOut {
+  0% { opacity: 0.8; }
+  100% { opacity: 0; }
+}
+
+.match-line-drawing {
+  stroke: #4D96FF;
+  stroke-width: 4;
+  stroke-dasharray: 8 6;
+  opacity: 0.7;
+}
+
+.match-next-btn {
+  background: #9D4EDD;
+  color: white;
+  border: none;
+  border-radius: 100px;
+  padding: 1rem 2.5rem;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  cursor: pointer;
+  box-shadow: 0 5px 0 #7a3eb5, var(--shadow-soft);
+  transition: transform 0.15s;
+  margin-top: 1.5rem;
+  display: none;
+}
+
+.match-next-btn.show { display: block; animation: resultPop 0.4s; }
+.match-next-btn:hover { transform: scale(1.05); }
+.match-next-btn:active { transform: translateY(2px); box-shadow: 0 3px 0 #7a3eb5; }
+
 /* Responsive */
 @media (max-width: 600px) {
   .mode-buttons { gap: 1rem; }
@@ -756,6 +962,11 @@ body {
         <span class="icon">🎮</span>
         <span class="label">Play</span>
         <span class="desc">Match letters & animals</span>
+      </button>
+      <button class="mode-btn match" onclick="showScreen('match-screen')">
+        <span class="icon">🔗</span>
+        <span class="label">Match</span>
+        <span class="desc">Connect upper & lower case</span>
       </button>
     </div>
   </div>
@@ -817,6 +1028,26 @@ body {
   </div>
 </div>
 
+<!-- ============ MATCH SCREEN ============ -->
+<div class="screen" id="match-screen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="endMatchGame(); showScreen('home-screen')" title="Back">⬅</button>
+    <span class="screen-title">🔗 Match Letters</span>
+    <span class="score-badge">✅ <span id="match-score">0</span>/<span id="match-total">6</span></span>
+  </div>
+  <div class="match-area" id="match-area">
+    <div class="match-prompt">Draw a line to match the letters!</div>
+    <div class="match-hint">Connect big letters to small letters</div>
+    <div class="match-progress" id="match-progress"></div>
+    <div class="match-board" id="match-board">
+      <svg class="match-svg" id="match-svg"></svg>
+      <div class="match-column" id="match-left"></div>
+      <div class="match-column" id="match-right"></div>
+    </div>
+    <button class="match-next-btn" id="match-next-btn" onclick="nextMatchRound()">Next Round →</button>
+  </div>
+</div>
+
 <!-- Star celebration container -->
 <div class="star-celebration" id="star-celebration"></div>
 
@@ -870,6 +1101,7 @@ function showScreen(id) {
   if (id === 'learn-screen') initLearn();
   if (id === 'listen-screen') initListen();
   if (id === 'play-screen') initGame();
+  if (id === 'match-screen') initMatchGame();
 }
 
 // ===== Speech Synthesis =====
@@ -1184,6 +1416,295 @@ function restartGame() {
 }
 
 function endGame() {
+  document.getElementById('game-finished').classList.remove('show');
+  speechSynthesis.cancel();
+}
+
+// ===== MATCH GAME: Upper-Lower Case Connection =====
+let matchRoundLetters = [];
+let matchMatched = 0;
+let matchRound = 0;
+let matchTotalRounds = 4;
+let matchDragging = false;
+let matchDragStartNode = null;
+let matchDragLine = null;
+let matchMatchedPairs = new Set();
+
+const MATCH_ROUND_SIZE = 6;
+
+function initMatchGame() {
+  matchRound = 0;
+  matchMatched = 0;
+  matchTotalRounds = 4;
+  document.getElementById('match-score').textContent = '0';
+  setupMatchRound();
+}
+
+function setupMatchRound() {
+  if (matchRound >= matchTotalRounds) {
+    showMatchFinished();
+    return;
+  }
+
+  matchMatched = 0;
+  matchMatchedPairs.clear();
+  matchRoundLetters = [];
+  matchDragLine = null;
+  matchDragging = false;
+
+  // Pick 6 random letters for this round
+  const shuffled = [...ALPHABET].sort(() => Math.random() - 0.5);
+  matchRoundLetters = shuffled.slice(0, MATCH_ROUND_SIZE).map(item => ({
+    upper: item.letter,
+    lower: item.letter.toLowerCase(),
+    color: item.color,
+  }));
+
+  document.getElementById('match-score').textContent = '0';
+  document.getElementById('match-total').textContent = matchRoundLetters.length;
+  document.getElementById('match-next-btn').classList.remove('show');
+
+  // Build progress dots
+  const progress = document.getElementById('match-progress');
+  progress.innerHTML = '';
+  for (let i = 0; i < matchRoundLetters.length; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'match-progress-dot';
+    dot.id = `match-dot-${i}`;
+    progress.appendChild(dot);
+  }
+
+  // Build left column (uppercase, in order)
+  const leftCol = document.getElementById('match-left');
+  leftCol.innerHTML = '';
+  matchRoundLetters.forEach((item, i) => {
+    const node = document.createElement('div');
+    node.className = 'match-node upper';
+    node.textContent = item.upper;
+    node.style.borderTop = `none`;
+    node.dataset.letter = item.upper;
+    node.dataset.index = i;
+    node.innerHTML = `<span>${item.upper}</span><span class="checkmark">✓</span>`;
+    node.addEventListener('pointerdown', (e) => startMatchDrag(e, node));
+    leftCol.appendChild(node);
+  });
+
+  // Build right column (lowercase, shuffled)
+  const rightCol = document.getElementById('match-right');
+  rightCol.innerHTML = '';
+  const shuffledLower = [...matchRoundLetters].sort(() => Math.random() - 0.5);
+  shuffledLower.forEach((item) => {
+    const originalIndex = matchRoundLetters.findIndex(l => l.upper === item.upper);
+    const node = document.createElement('div');
+    node.className = 'match-node lower';
+    node.dataset.letter = item.upper; // store uppercase for matching
+    node.dataset.index = originalIndex;
+    node.innerHTML = `<span>${item.lower}</span><span class="checkmark">✓</span>`;
+    rightCol.appendChild(node);
+  });
+
+  // Clear SVG
+  const svg = document.getElementById('match-svg');
+  svg.innerHTML = '';
+
+  // Speak instructions
+  speak('Match the big letters to the small letters!', 0.85, 1.2);
+}
+
+function startMatchDrag(e, node) {
+  if (node.classList.contains('matched')) return;
+  e.preventDefault();
+
+  matchDragging = true;
+  matchDragStartNode = node;
+  node.setPointerCapture(e.pointerId);
+
+  // Get the position of the node relative to the SVG
+  const board = document.getElementById('match-board');
+  const boardRect = board.getBoundingClientRect();
+  const nodeRect = node.getBoundingClientRect();
+  const startX = nodeRect.left + nodeRect.width / 2 - boardRect.left;
+  const startY = nodeRect.top + nodeRect.height / 2 - boardRect.top;
+
+  // Create SVG line
+  const svg = document.getElementById('match-svg');
+  const ns = 'http://www.w3.org/2000/svg';
+  const line = document.createElementNS(ns, 'line');
+  line.setAttribute('x1', startX);
+  line.setAttribute('y1', startY);
+  line.setAttribute('x2', startX);
+  line.setAttribute('y2', startY);
+  line.setAttribute('class', 'match-line-drawing');
+  svg.appendChild(line);
+  matchDragLine = line;
+
+  // Track pointer move
+  const moveHandler = (ev) => updateMatchDrag(ev);
+  const upHandler = (ev) => endMatchDrag(ev, moveHandler, upHandler);
+  node.addEventListener('pointermove', moveHandler);
+  node.addEventListener('pointerup', upHandler);
+  node.addEventListener('pointercancel', upHandler);
+  // Also listen on document for moves outside the node
+  document.addEventListener('pointermove', moveHandler);
+  document.addEventListener('pointerup', upHandler);
+  document.addEventListener('pointercancel', upHandler);
+
+  // Store handlers for cleanup
+  node._moveHandler = moveHandler;
+  node._upHandler = upHandler;
+}
+
+function updateMatchDrag(e) {
+  if (!matchDragging || !matchDragLine) return;
+
+  const board = document.getElementById('match-board');
+  const boardRect = board.getBoundingClientRect();
+  const x = e.clientX - boardRect.left;
+  const y = e.clientY - boardRect.top;
+
+  matchDragLine.setAttribute('x2', x);
+  matchDragLine.setAttribute('y2', y);
+}
+
+function endMatchDrag(e, moveHandler, upHandler) {
+  if (!matchDragging) return;
+  matchDragging = false;
+
+  const board = document.getElementById('match-board');
+  const boardRect = board.getBoundingClientRect();
+  const x = e.clientX - boardRect.left;
+  const y = e.clientY - boardRect.top;
+
+  // Find which right-side node the pointer is over
+  const elem = document.elementFromPoint(e.clientX, e.clientY);
+  let targetNode = null;
+  if (elem) {
+    targetNode = elem.closest('.match-node.lower:not(.matched)');
+  }
+
+  const startNode = matchDragStartNode;
+  const line = matchDragLine;
+  matchDragLine = null;
+  matchDragStartNode = null;
+
+  // Cleanup listeners
+  if (startNode) {
+    startNode.removeEventListener('pointermove', moveHandler);
+    startNode.removeEventListener('pointerup', upHandler);
+    startNode.removeEventListener('pointercancel', upHandler);
+  }
+  document.removeEventListener('pointermove', moveHandler);
+  document.removeEventListener('pointerup', upHandler);
+  document.removeEventListener('pointercancel', upHandler);
+
+  if (targetNode && startNode) {
+    // Check if the match is correct
+    const startLetter = startNode.dataset.letter;
+    const targetLetter = targetNode.dataset.letter;
+
+    if (startLetter === targetLetter) {
+      // Correct match!
+      handleCorrectMatch(startNode, targetNode, line);
+    } else {
+      // Wrong match
+      handleWrongMatch(startNode, targetNode, line, boardRect);
+    }
+  } else {
+    // No target - just remove the line
+    if (line && line.parentNode) line.parentNode.removeChild(line);
+  }
+}
+
+function handleCorrectMatch(leftNode, rightNode, line) {
+  // Mark nodes as matched
+  leftNode.classList.add('matched');
+  rightNode.classList.add('matched');
+
+  // Style the line as correct
+  if (line) {
+    line.setAttribute('class', 'match-line-correct');
+    // Snap line endpoints to node centers
+    const board = document.getElementById('match-board');
+    const boardRect = board.getBoundingClientRect();
+    const leftRect = leftNode.getBoundingClientRect();
+    const rightRect = rightNode.getBoundingClientRect();
+    line.setAttribute('x1', leftRect.left + leftRect.width / 2 - boardRect.left);
+    line.setAttribute('y1', leftRect.top + leftRect.height / 2 - boardRect.top);
+    line.setAttribute('x2', rightRect.left + rightRect.width / 2 - boardRect.left);
+    line.setAttribute('y2', rightRect.top + rightRect.height / 2 - boardRect.top);
+  }
+
+  matchMatched++;
+  document.getElementById('match-score').textContent = matchMatched;
+
+  // Update progress dots
+  const idx = parseInt(leftNode.dataset.index);
+  const dot = document.getElementById(`match-dot-${idx}`);
+  if (dot) dot.classList.add('done');
+
+  // Celebrate
+  celebrate();
+
+  // Speak the letter
+  const letter = leftNode.dataset.letter;
+  speak(`${letter.toUpperCase()}, ${letter.toLowerCase()}. Match!`, 0.85, 1.3);
+
+  // Check if round is complete
+  if (matchMatched >= matchRoundLetters.length) {
+    setTimeout(() => {
+      speak('All matched! Great job!', 0.9, 1.3);
+      document.getElementById('match-next-btn').classList.add('show');
+    }, 500);
+  }
+}
+
+function handleWrongMatch(leftNode, rightNode, line, boardRect) {
+  // Flash both nodes
+  leftNode.classList.add('wrong-flash');
+  rightNode.classList.add('wrong-flash');
+  setTimeout(() => {
+    leftNode.classList.remove('wrong-flash');
+    rightNode.classList.remove('wrong-flash');
+  }, 500);
+
+  // Style the line as wrong and fade it out
+  if (line) {
+    line.setAttribute('class', 'match-line-wrong');
+    const leftRect = leftNode.getBoundingClientRect();
+    const rightRect = rightNode.getBoundingClientRect();
+    line.setAttribute('x1', leftRect.left + leftRect.width / 2 - boardRect.left);
+    line.setAttribute('y1', leftRect.top + leftRect.height / 2 - boardRect.top);
+    line.setAttribute('x2', rightRect.left + rightRect.width / 2 - boardRect.left);
+    line.setAttribute('y2', rightRect.top + rightRect.height / 2 - boardRect.top);
+    // Remove after animation
+    setTimeout(() => {
+      if (line && line.parentNode) line.parentNode.removeChild(line);
+    }, 500);
+  }
+
+  // Speak encouragement
+  speak('Try again!', 0.9, 1.1);
+}
+
+function nextMatchRound() {
+  matchRound++;
+  setupMatchRound();
+}
+
+function showMatchFinished() {
+  document.getElementById('final-score').textContent = `Round ${matchTotalRounds}/${matchTotalRounds}`;
+  document.querySelector('.game-finished .trophy').textContent = '🏆';
+  document.querySelector('.game-finished h2').textContent = 'You matched them all!';
+  document.querySelector('.game-finished p').textContent = 'You connected every big letter to its small letter!';
+  document.querySelector('.finished-card .final-score').textContent = 'Perfect!';
+  document.getElementById('game-finished').classList.add('show');
+  speak('Amazing! You matched all the letters! You are a letter champion!', 0.9, 1.3);
+}
+
+function endMatchGame() {
+  matchDragging = false;
+  matchDragLine = null;
+  matchDragStartNode = null;
   document.getElementById('game-finished').classList.remove('show');
   speechSynthesis.cancel();
 }
