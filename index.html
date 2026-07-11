@@ -802,34 +802,42 @@ body {
 
 <script>
 // ===== DATA: 26 Letters with Animals =====
+// ===== 3D Animal Images (iOS-style via Microsoft Fluent Emoji + Google Noto fallback) =====
+const FLUENT_CDN = 'https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets';
+const NOTO_CDN = 'https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@main/png/128';
+
 const ALPHABET = [
-  { letter: 'A', animal: 'alligator', emoji: '1f40a',   color: '#FF6B6B' },
-  { letter: 'B', animal: 'bear',      emoji: '1f43b',   color: '#FFA06B' },
-  { letter: 'C', animal: 'cat',       emoji: '1f431',   color: '#FFD93D' },
-  { letter: 'D', animal: 'dog',       emoji: '1f436',   color: '#C5E63D' },
-  { letter: 'E', animal: 'elephant',  emoji: '1f418',   color: '#6BCB77' },
-  { letter: 'F', animal: 'fox',       emoji: '1f98a',   color: '#4DD9A0' },
-  { letter: 'G', animal: 'giraffe',   emoji: '1f992',   color: '#3DCCC7' },
-  { letter: 'H', animal: 'hippo',     emoji: '1f99b',   color: '#3DB4D9' },
-  { letter: 'I', animal: 'iguana',    emoji: '1f98e',   color: '#4D96FF' },
-  { letter: 'J', animal: 'jellyfish', emoji: '1fabc',   color: '#6B7AFF' },
-  { letter: 'K', animal: 'kangaroo',  emoji: '1f998',   color: '#9D4EDD' },
-  { letter: 'L', animal: 'lion',      emoji: '1f981',   color: '#B83AD9' },
-  { letter: 'M', animal: 'monkey',    emoji: '1f435',   color: '#D93AB8' },
-  { letter: 'N', animal: 'narwhal',   emoji: '1f40b',   color: '#E63A8C' },
-  { letter: 'O', animal: 'owl',       emoji: '1f989',   color: '#FF6B9D' },
-  { letter: 'P', animal: 'penguin',   emoji: '1f390',   color: '#FF6B6B' },
-  { letter: 'Q', animal: 'quail',     emoji: '1f426',   color: '#FF8C42' },
-  { letter: 'R', animal: 'rabbit',    emoji: '1f430',   color: '#FFB347' },
-  { letter: 'S', animal: 'snake',     emoji: '1f40d',   color: '#FFD93D' },
-  { letter: 'T', animal: 'tiger',     emoji: '1f42f',   color: '#C5E63D' },
-  { letter: 'U', animal: 'unicorn',   emoji: '1f984',   color: '#6BCB77' },
-  { letter: 'V', animal: 'vulture',   emoji: '1f985',   color: '#3DCCC7' },
-  { letter: 'W', animal: 'whale',     emoji: '1f40c',   color: '#4D96FF' },
-  { letter: 'X', animal: 'x-ray fish',emoji: '1f420',   color: '#9D4EDD' },
-  { letter: 'Y', animal: 'yak',       emoji: '1f403',   color: '#D93AB8' },
-  { letter: 'Z', animal: 'zebra',     emoji: '1f993',   color: '#FF6B9D' },
+  { letter: 'A', animal: 'alligator',  img3d: FLUENT_CDN + '/Crocodile/3D/crocodile_3d.png',  color: '#FF6B6B' },
+  { letter: 'B', animal: 'bear',  img3d: FLUENT_CDN + '/Bear/3D/bear_3d.png',  color: '#FFA06B' },
+  { letter: 'C', animal: 'cat',  img3d: FLUENT_CDN + '/Cat/3D/cat_3d.png',  color: '#FFD93D' },
+  { letter: 'D', animal: 'dog',  img3d: FLUENT_CDN + '/Dog/3D/dog_3d.png',  color: '#C5E63D' },
+  { letter: 'E', animal: 'elephant',  img3d: FLUENT_CDN + '/Elephant/3D/elephant_3d.png',  color: '#6BCB77' },
+  { letter: 'F', animal: 'fox',  img3d: FLUENT_CDN + '/Fox/3D/fox_3d.png',  color: '#4DD9A0' },
+  { letter: 'G', animal: 'giraffe',  img3d: FLUENT_CDN + '/Giraffe/3D/giraffe_3d.png',  color: '#3DCCC7' },
+  { letter: 'H', animal: 'hippo',  img3d: FLUENT_CDN + '/Hippopotamus/3D/hippopotamus_3d.png',  color: '#3DB4D9' },
+  { letter: 'I', animal: 'iguana',  img3d: FLUENT_CDN + '/Lizard/3D/lizard_3d.png',  color: '#4D96FF' },
+  { letter: 'J', animal: 'jellyfish',  img3d: FLUENT_CDN + '/Jellyfish/3D/jellyfish_3d.png',  color: '#6B7AFF' },
+  { letter: 'K', animal: 'kangaroo',  img3d: FLUENT_CDN + '/Kangaroo/3D/kangaroo_3d.png',  color: '#9D4EDD' },
+  { letter: 'L', animal: 'lion',  img3d: FLUENT_CDN + '/Lion/3D/lion_3d.png',  color: '#B83AD9' },
+  { letter: 'M', animal: 'monkey',  img3d: FLUENT_CDN + '/Monkey/3D/monkey_3d.png',  color: '#D93AB8' },
+  { letter: 'N', animal: 'narwhal',  img3d: NOTO_CDN + '/emoji_u1f40b.png',  color: '#E63A8C' },
+  { letter: 'O', animal: 'owl',  img3d: FLUENT_CDN + '/Owl/3D/owl_3d.png',  color: '#FF6B9D' },
+  { letter: 'P', animal: 'penguin',  img3d: FLUENT_CDN + '/Penguin/3D/penguin_3d.png',  color: '#FF6B6B' },
+  { letter: 'Q', animal: 'quail',  img3d: FLUENT_CDN + '/Bird/3D/bird_3d.png',  color: '#FF8C42' },
+  { letter: 'R', animal: 'rabbit',  img3d: FLUENT_CDN + '/Rabbit/3D/rabbit_3d.png',  color: '#FFB347' },
+  { letter: 'S', animal: 'snake',  img3d: FLUENT_CDN + '/Snake/3D/snake_3d.png',  color: '#FFD93D' },
+  { letter: 'T', animal: 'tiger',  img3d: FLUENT_CDN + '/Tiger/3D/tiger_3d.png',  color: '#C5E63D' },
+  { letter: 'U', animal: 'unicorn',  img3d: FLUENT_CDN + '/Unicorn/3D/unicorn_3d.png',  color: '#6BCB77' },
+  { letter: 'V', animal: 'vulture',  img3d: FLUENT_CDN + '/Eagle/3D/eagle_3d.png',  color: '#3DCCC7' },
+  { letter: 'W', animal: 'whale',  img3d: FLUENT_CDN + '/Whale/3D/whale_3d.png',  color: '#4D96FF' },
+  { letter: 'X', animal: 'x-ray fish',  img3d: NOTO_CDN + '/emoji_u1f420.png',  color: '#9D4EDD' },
+  { letter: 'Y', animal: 'yak',  img3d: FLUENT_CDN + '/Ox/3D/ox_3d.png',  color: '#D93AB8' },
+  { letter: 'Z', animal: 'zebra',  img3d: FLUENT_CDN + '/Zebra/3D/zebra_3d.png',  color: '#FF6B9D' },
 ];
+
+function animalImg(item, size) {
+  return `<img src="${item.img3d}" class="emoji-img" style="width:${size};height:${size};" loading="lazy" alt="${item.animal}">`;
+}
 
 // ===== Twemoji Image Helper =====
 const TWEMOJI_CDN = 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg';
@@ -1001,7 +1009,7 @@ function initLearn() {
     card.style.borderTop = `5px solid ${item.color}`;
     card.innerHTML = `
       <div class="big-letter" style="color:${item.color}">${item.letter}</div>
-      <span class="animal-emoji">${emojiImg(item.emoji, '2.5rem')}</span>
+      <span class="animal-emoji">${animalImg(item, '2.5rem')}</span>
       <div class="animal-name">${item.animal}</div>
     `;
     card.onclick = () => openDetail(i);
@@ -1015,7 +1023,7 @@ function openDetail(index) {
   document.getElementById('detail-letter').innerHTML =
     `${item.letter}<span class="lower">${item.letter.toLowerCase()}</span>`;
   document.getElementById('detail-letter').style.color = item.color;
-  document.getElementById('detail-animal').innerHTML = emojiImg(item.emoji, '5rem');
+  document.getElementById('detail-animal').innerHTML = animalImg(item, '5rem');
   document.getElementById('detail-name').textContent = item.animal;
   document.getElementById('detail-phrase').textContent = `"${item.letter} is for ${item.animal}!"`;
   document.getElementById('detail-overlay').classList.add('show');
@@ -1081,7 +1089,7 @@ function renderRound() {
 
   area.innerHTML = `
     <div class="game-prompt">Which letter does this animal start with?</div>
-    <div class="game-animal">${emojiImg(item.emoji, '1em')}</div>
+    <div class="game-animal">${animalImg(item, '1em')}</div>
     <div class="game-question">${item.animal}</div>
     <div class="game-options" id="game-options"></div>
     <div class="game-result" id="game-result"></div>
