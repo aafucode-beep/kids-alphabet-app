@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ABC Animals! - Learn Your Letters</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Bubblegum+Sans&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/dist/twemoji.min.js"></script>
 <style>
 :root {
   --font-body: 'Fredoka', sans-serif;
@@ -52,6 +53,13 @@ body {
   10% { opacity: 0.35; }
   90% { opacity: 0.2; }
   100% { transform: translateY(-20vh) scale(1.2); opacity: 0; }
+}
+
+/* Twemoji image base style */
+.emoji-img {
+  display: inline-block;
+  vertical-align: middle;
+  object-fit: contain;
 }
 
 /* ---- Screen System ---- */
@@ -177,6 +185,31 @@ body {
 
 .mode-btn.learn { border-top: 6px solid #FF6B6B; }
 .mode-btn.play { border-top: 6px solid #6BCB77; }
+
+/* Voice quality badge */
+.voice-badge {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 100px;
+  padding: 6px 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #666;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.voice-badge:hover { background: rgba(255,255,255,1); }
+.voice-badge .dot { width: 8px; height: 8px; border-radius: 50%; }
+.voice-badge .dot.online { background: #6BCB77; }
+.voice-badge .dot.local { background: #FFD93D; }
+.voice-badge .dot.fallback { background: #FF6B6B; }
 
 /* ---- Top Bar ---- */
 .top-bar {
@@ -434,6 +467,7 @@ body {
   margin-top: 1rem;
   transition: transform 0.15s;
 }
+
 .random-btn:hover { transform: scale(1.05); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
 .random-btn:active { transform: scale(0.95); }
 
@@ -690,15 +724,15 @@ body {
 <div class="screen active" id="home-screen">
   <div class="home-content">
     <h1 class="home-title">ABC Animals!</h1>
-    <p class="home-subtitle"><span class="parrot">🦜</span> Let's learn our letters together!</p>
+    <p class="home-subtitle"><span class="parrot" id="parrot-emoji"></span> Let's learn our letters together!</p>
     <div class="mode-buttons">
       <button class="mode-btn learn" onclick="showScreen('learn-screen')">
-        <span class="icon">📖</span>
+        <span class="icon" id="icon-learn"></span>
         <span class="label">Learn</span>
         <span class="desc">Tap letters to explore</span>
       </button>
       <button class="mode-btn play" onclick="showScreen('play-screen')">
-        <span class="icon">🎮</span>
+        <span class="icon" id="icon-play"></span>
         <span class="label">Play</span>
         <span class="desc">Match letters & animals</span>
       </button>
@@ -709,8 +743,8 @@ body {
 <!-- ============ LEARN SCREEN ============ -->
 <div class="screen" id="learn-screen">
   <div class="top-bar">
-    <button class="back-btn" onclick="showScreen('home-screen')" title="Back">⬅</button>
-    <span class="screen-title">📖 Learn Your Letters</span>
+    <button class="back-btn" onclick="showScreen('home-screen')" title="Back" id="back-btn-learn"></button>
+    <span class="screen-title">Learn Your Letters</span>
     <div style="width:56px"></div>
   </div>
   <div class="content-area">
@@ -721,24 +755,24 @@ body {
 <!-- Detail overlay -->
 <div class="detail-overlay" id="detail-overlay" onclick="closeDetail(event)">
   <div class="detail-card" id="detail-card">
-    <button class="close-btn" onclick="closeDetail()" title="Close">✕</button>
-    <button class="nav-btn nav-prev" onclick="navPrev()" title="Previous letter" aria-label="Previous letter">◀</button>
-    <button class="nav-btn nav-next" onclick="navNext()" title="Next letter" aria-label="Next letter">▶</button>
+    <button class="close-btn" onclick="closeDetail()" title="Close">&#10005;</button>
+    <button class="nav-btn nav-prev" onclick="navPrev()" title="Previous letter" aria-label="Previous letter">&#9664;</button>
+    <button class="nav-btn nav-next" onclick="navNext()" title="Next letter" aria-label="Next letter">&#9654;</button>
     <div class="detail-letter" id="detail-letter"></div>
     <span class="detail-animal" id="detail-animal"></span>
     <div class="detail-name" id="detail-name"></div>
     <div class="detail-phrase" id="detail-phrase"></div>
-    <button class="speak-btn" onclick="speakCurrent()">🔊 Hear it again!</button>
-    <button class="random-btn" onclick="navRandom()" title="Random letter" aria-label="Random letter">🎲 Random</button>
+    <button class="speak-btn" onclick="speakCurrent()" id="speak-btn-detail">Hear it again!</button>
+    <button class="random-btn" onclick="navRandom()" title="Random letter" aria-label="Random letter">Random</button>
   </div>
 </div>
 
 <!-- ============ PLAY SCREEN ============ -->
 <div class="screen" id="play-screen">
   <div class="top-bar">
-    <button class="back-btn" onclick="endGame(); showScreen('home-screen')" title="Back">⬅</button>
-    <span class="screen-title">🎮 Letter Game</span>
-    <span class="score-badge">⭐ <span id="score">0</span></span>
+    <button class="back-btn" onclick="endGame(); showScreen('home-screen')" title="Back" id="back-btn-play"></button>
+    <span class="screen-title">Letter Game</span>
+    <span class="score-badge">&#11088; <span id="score">0</span></span>
   </div>
   <div class="game-area" id="game-area">
     <!-- Game content injected by JS -->
@@ -751,45 +785,78 @@ body {
 <!-- Game finished overlay -->
 <div class="game-finished" id="game-finished">
   <div class="finished-card">
-    <span class="trophy">🏆</span>
+    <span class="trophy" id="trophy-emoji"></span>
     <h2>You did it!</h2>
     <p>You matched all the letters!</p>
     <div class="final-score" id="final-score">0 / 10</div>
     <p>Great job, little learner!</p>
-    <button class="play-again-btn" onclick="restartGame()">🎮 Play Again</button>
+    <button class="play-again-btn" onclick="restartGame()" id="play-again-btn">Play Again</button>
   </div>
+</div>
+
+<!-- Voice quality badge -->
+<div class="voice-badge" id="voice-badge" onclick="testVoice()" title="Voice status - click to test">
+  <span class="dot" id="voice-dot"></span>
+  <span id="voice-label">Loading voice...</span>
 </div>
 
 <script>
 // ===== DATA: 26 Letters with Animals =====
 const ALPHABET = [
-  { letter: 'A', animal: 'alligator', emoji: '🐊', color: '#FF6B6B' },
-  { letter: 'B', animal: 'bear',      emoji: '🐻', color: '#FFA06B' },
-  { letter: 'C', animal: 'cat',       emoji: '🐱', color: '#FFD93D' },
-  { letter: 'D', animal: 'dog',       emoji: '🐶', color: '#C5E63D' },
-  { letter: 'E', animal: 'elephant',  emoji: '🐘', color: '#6BCB77' },
-  { letter: 'F', animal: 'fox',       emoji: '🦊', color: '#4DD9A0' },
-  { letter: 'G', animal: 'giraffe',   emoji: '🦒', color: '#3DCCC7' },
-  { letter: 'H', animal: 'hippo',     emoji: '🦛', color: '#3DB4D9' },
-  { letter: 'I', animal: 'iguana',    emoji: '🦎', color: '#4D96FF' },
-  { letter: 'J', animal: 'jellyfish', emoji: '🪼', color: '#6B7AFF' },
-  { letter: 'K', animal: 'kangaroo',  emoji: '🦘', color: '#9D4EDD' },
-  { letter: 'L', animal: 'lion',      emoji: '🦁', color: '#B83AD9' },
-  { letter: 'M', animal: 'monkey',    emoji: '🐵', color: '#D93AB8' },
-  { letter: 'N', animal: 'narwhal',   emoji: '🐳', color: '#E63A8C' },
-  { letter: 'O', animal: 'owl',       emoji: '🦉', color: '#FF6B9D' },
-  { letter: 'P', animal: 'penguin',   emoji: '🐧', color: '#FF6B6B' },
-  { letter: 'Q', animal: 'quail',     emoji: '🐦', color: '#FF8C42' },
-  { letter: 'R', animal: 'rabbit',    emoji: '🐰', color: '#FFB347' },
-  { letter: 'S', animal: 'snake',     emoji: '🐍', color: '#FFD93D' },
-  { letter: 'T', animal: 'tiger',     emoji: '🐯', color: '#C5E63D' },
-  { letter: 'U', animal: 'unicorn',   emoji: '🦄', color: '#6BCB77' },
-  { letter: 'V', animal: 'vulture',   emoji: '🦅', color: '#3DCCC7' },
-  { letter: 'W', animal: 'whale',     emoji: '🐋', color: '#4D96FF' },
-  { letter: 'X', animal: 'x-ray fish',emoji: '🐠', color: '#9D4EDD' },
-  { letter: 'Y', animal: 'yak',       emoji: '🐃', color: '#D93AB8' },
-  { letter: 'Z', animal: 'zebra',     emoji: '🦓', color: '#FF6B9D' },
+  { letter: 'A', animal: 'alligator', emoji: '1f40a',   color: '#FF6B6B' },
+  { letter: 'B', animal: 'bear',      emoji: '1f43b',   color: '#FFA06B' },
+  { letter: 'C', animal: 'cat',       emoji: '1f431',   color: '#FFD93D' },
+  { letter: 'D', animal: 'dog',       emoji: '1f436',   color: '#C5E63D' },
+  { letter: 'E', animal: 'elephant',  emoji: '1f418',   color: '#6BCB77' },
+  { letter: 'F', animal: 'fox',       emoji: '1f98a',   color: '#4DD9A0' },
+  { letter: 'G', animal: 'giraffe',   emoji: '1f992',   color: '#3DCCC7' },
+  { letter: 'H', animal: 'hippo',     emoji: '1f99b',   color: '#3DB4D9' },
+  { letter: 'I', animal: 'iguana',    emoji: '1f98e',   color: '#4D96FF' },
+  { letter: 'J', animal: 'jellyfish', emoji: '1fabc',   color: '#6B7AFF' },
+  { letter: 'K', animal: 'kangaroo',  emoji: '1f998',   color: '#9D4EDD' },
+  { letter: 'L', animal: 'lion',      emoji: '1f981',   color: '#B83AD9' },
+  { letter: 'M', animal: 'monkey',    emoji: '1f435',   color: '#D93AB8' },
+  { letter: 'N', animal: 'narwhal',   emoji: '1f40b',   color: '#E63A8C' },
+  { letter: 'O', animal: 'owl',       emoji: '1f989',   color: '#FF6B9D' },
+  { letter: 'P', animal: 'penguin',   emoji: '1f390',   color: '#FF6B6B' },
+  { letter: 'Q', animal: 'quail',     emoji: '1f426',   color: '#FF8C42' },
+  { letter: 'R', animal: 'rabbit',    emoji: '1f430',   color: '#FFB347' },
+  { letter: 'S', animal: 'snake',     emoji: '1f40d',   color: '#FFD93D' },
+  { letter: 'T', animal: 'tiger',     emoji: '1f42f',   color: '#C5E63D' },
+  { letter: 'U', animal: 'unicorn',   emoji: '1f984',   color: '#6BCB77' },
+  { letter: 'V', animal: 'vulture',   emoji: '1f985',   color: '#3DCCC7' },
+  { letter: 'W', animal: 'whale',     emoji: '1f40c',   color: '#4D96FF' },
+  { letter: 'X', animal: 'x-ray fish',emoji: '1f420',   color: '#9D4EDD' },
+  { letter: 'Y', animal: 'yak',       emoji: '1f403',   color: '#D93AB8' },
+  { letter: 'Z', animal: 'zebra',     emoji: '1f993',   color: '#FF6B9D' },
 ];
+
+// ===== Twemoji Image Helper =====
+const TWEMOJI_CDN = 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg';
+
+function emojiImg(codepoint, size) {
+  return `<img src="${TWEMOJI_CDN}/${codepoint}.svg" class="emoji-img" style="width:${size};height:${size};" loading="lazy" alt="">`;
+}
+
+// Decorative emojis (codepoints for UI icons)
+const EMOJI_ICONS = {
+  parrot: '1f99c',
+  book: '1f4d6',
+  game: '1f3ae',
+  back: '2b05',
+  speaker: '1f50a',
+  star: '2b50',
+  sparkle: '2728',
+  star2: '1f31f',
+  dizzy: '1f4ab',
+  party: '1f389',
+  trophy: '1f3c6',
+  play: '25b6',
+  dice: '1f3b2',
+  close: '2715',
+  prev: '25c0',
+  next: '25b6',
+};
 
 // ===== Screen Navigation =====
 function showScreen(id) {
@@ -799,52 +866,182 @@ function showScreen(id) {
   if (id === 'play-screen') initGame();
 }
 
-// ===== Speech Synthesis =====
+// ===== TTS: Hybrid Online + Local =====
+let ttsMode = 'unknown'; // 'online' | 'local' | 'fallback'
+let currentAudio = null;
+
+// Online TTS via StreamElements API (free, returns MP3, high-quality Amazon Polly voices)
+const ONLINE_TTS_URL = 'https://api.streamelements.com/kappa/v2/speech';
+const ONLINE_TTS_VOICE = 'Ivy'; // child-like female voice, perfect for kids' app
+
+// Local Web Speech API voice selection
 let voices = [];
-// Common female voice names across platforms (macOS / iOS / Windows / Chrome / Android).
-const FEMALE_VOICE_HINTS = [
-  'female', 'woman',
-  'samantha', 'victoria', 'karen', 'moira', 'tessa', 'fiona',   // macOS / iOS
-  'zira', 'susan', 'linda', 'mary', 'eva',                       // Windows
-  'allison', 'ava', 'nora', 'emma', 'jenny',                     // Azure / Edge / mobile
+const PREFERRED_VOICE_PATTERNS = [
+  // Chrome remote voices (highest quality in Chrome)
+  'google us english',
+  'google uk english female',
+  'google uk english male',
+  // Edge / Windows neural voices
+  'microsoft aria',
+  'microsoft jenny',
+  'microsoft michelle',
+  'microsoft sara',
+  'microsoft ana',
+  // macOS / iOS natural voices
+  'samantha',
+  'victoria',
+  'karen',
+  'tessa',
+  'fiona',
+  'moira',
+  // Android Google TTS
+  'en-us',
+  // Windows SAPI voices (fallback)
+  'microsoft zira',
+  'microsoft sara',
+  'microsoft eva',
 ];
 
 function loadVoices() {
   voices = speechSynthesis.getVoices();
+  updateVoiceBadge();
 }
 loadVoices();
 if (speechSynthesis.onvoiceschanged !== undefined) {
   speechSynthesis.onvoiceschanged = loadVoices;
 }
 
-function pickFemaleVoice() {
-  // Strictly prefer female English; fall back gracefully if none found.
-  const lc = v => v.name.toLowerCase();
+function pickBestVoice() {
   const isEn = v => v.lang && v.lang.toLowerCase().startsWith('en');
-  const isFemale = v => FEMALE_VOICE_HINTS.some(h => lc(v).includes(h));
-  return voices.find(v => isEn(v) && isFemale(v))
-    || voices.find(v => isFemale(v))
-    || voices.find(isEn)
-    || voices[0];
+  const enVoices = voices.filter(isEn);
+  if (enVoices.length === 0) return voices[0] || null;
+
+  // Try preferred patterns in order
+  for (const pattern of PREFERRED_VOICE_PATTERNS) {
+    const match = enVoices.find(v => v.name.toLowerCase().includes(pattern));
+    if (match) return match;
+  }
+
+  // Prefer female-sounding names
+  const femaleNames = ['female', 'woman', 'samantha', 'victoria', 'karen', 'zira', 'eva', 'sara', 'aria', 'jenny', 'michelle', 'ana'];
+  for (const name of femaleNames) {
+    const match = enVoices.find(v => v.name.toLowerCase().includes(name));
+    if (match) return match;
+  }
+
+  // Prefer voices with "natural" or "premium" in name
+  const premium = enVoices.find(v => v.name.toLowerCase().includes('natural') || v.name.toLowerCase().includes('premium'));
+  if (premium) return premium;
+
+  return enVoices[0];
+}
+
+function updateVoiceBadge() {
+  const dot = document.getElementById('voice-dot');
+  const label = document.getElementById('voice-label');
+  if (ttsMode === 'online') {
+    dot.className = 'dot online';
+    label.textContent = 'Online voice';
+  } else if (ttsMode === 'local') {
+    const v = pickBestVoice();
+    dot.className = 'dot local';
+    label.textContent = v ? v.name.substring(0, 20) : 'Local voice';
+  } else if (ttsMode === 'fallback') {
+    dot.className = 'dot fallback';
+    label.textContent = 'Basic voice';
+  } else {
+    dot.className = 'dot fallback';
+    label.textContent = 'Loading voice...';
+  }
 }
 
 function speak(text, rate = 0.85, pitch = 1.2) {
-  speechSynthesis.cancel();
+  // Cancel any ongoing speech
+  stopSpeech();
+
+  // Try online TTS first for consistent quality across all devices
+  speakOnline(text).catch(() => {
+    // Fall back to local Web Speech API
+    speakLocal(text, rate, pitch);
+  });
+}
+
+function speakOnline(text) {
+  return new Promise((resolve, reject) => {
+    const url = `${ONLINE_TTS_URL}?voice=${ONLINE_TTS_VOICE}&text=${encodeURIComponent(text)}`;
+
+    // Quick connectivity check with a timeout
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3000);
+
+    fetch(url, { signal: controller, method: 'HEAD' })
+      .then(() => {
+        clearTimeout(timeout);
+        // URL is reachable - play the audio
+        currentAudio = new Audio(url);
+        currentAudio.crossOrigin = 'anonymous';
+        ttsMode = 'online';
+        updateVoiceBadge();
+
+        currentAudio.onended = () => { currentAudio = null; resolve(); };
+        currentAudio.onerror = () => {
+          currentAudio = null;
+          ttsMode = 'local';
+          reject(new Error('Audio playback failed'));
+        };
+        currentAudio.play().catch(() => {
+          currentAudio = null;
+          ttsMode = 'local';
+          reject(new Error('Play failed'));
+        });
+      })
+      .catch(() => {
+        clearTimeout(timeout);
+        ttsMode = 'local';
+        reject(new Error('Online TTS unavailable'));
+      });
+  });
+}
+
+function speakLocal(text, rate, pitch) {
+  if (!('speechSynthesis' in window)) {
+    ttsMode = 'fallback';
+    updateVoiceBadge();
+    return;
+  }
+
   const u = new SpeechSynthesisUtterance(text);
   u.rate = rate;
   u.pitch = pitch;
   u.volume = 1;
-  const v = pickFemaleVoice();
-  if (v) u.voice = v;
+  const v = pickBestVoice();
+  if (v) {
+    u.voice = v;
+    u.lang = v.lang;
+  }
+  ttsMode = v ? 'local' : 'fallback';
+  updateVoiceBadge();
   speechSynthesis.speak(u);
 }
 
-function speakLetterAndAnimal(item) {
-  speak(`${item.letter}, ${item.animal}`, 0.8, 1.3);
+function stopSpeech() {
+  // Stop online audio
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio = null;
+  }
+  // Stop local speech
+  if ('speechSynthesis' in window) {
+    speechSynthesis.cancel();
+  }
 }
 
-function speakLetterSound(letter) {
-  speak(letter, 0.7, 1.5);
+function testVoice() {
+  speak('Hello! I am your ABC Animals teacher. Let us learn together!');
+}
+
+function speakLetterAndAnimal(item) {
+  speak(`${item.letter}, ${item.letter} for ${item.animal}`, 0.8, 1.3);
 }
 
 // ===== Bubbles Background =====
@@ -866,6 +1063,28 @@ function createBubbles() {
 }
 createBubbles();
 
+// ===== Render UI Emoji Icons =====
+function renderStaticEmojis() {
+  // Home screen icons
+  document.getElementById('parrot-emoji').innerHTML = emojiImg(EMOJI_ICONS.parrot, '1.5em');
+  document.getElementById('icon-learn').innerHTML = emojiImg(EMOJI_ICONS.book, '1em');
+  document.getElementById('icon-play').innerHTML = emojiImg(EMOJI_ICONS.game, '1em');
+
+  // Back buttons (use arrow character, no emoji needed)
+  document.getElementById('back-btn-learn').innerHTML = '&#8592;';
+  document.getElementById('back-btn-play').innerHTML = '&#8592;';
+
+  // Speak button
+  document.getElementById('speak-btn-detail').innerHTML = emojiImg(EMOJI_ICONS.speaker, '1.1em') + ' Hear it again!';
+
+  // Trophy
+  document.getElementById('trophy-emoji').innerHTML = emojiImg(EMOJI_ICONS.trophy, '1em');
+
+  // Play again button
+  document.getElementById('play-again-btn').innerHTML = emojiImg(EMOJI_ICONS.game, '1em') + ' Play Again';
+}
+renderStaticEmojis();
+
 // ===== LEARN MODE =====
 let currentDetailIndex = 0;
 const N = ALPHABET.length;
@@ -880,7 +1099,7 @@ function initLearn() {
     card.style.borderTop = `5px solid ${item.color}`;
     card.innerHTML = `
       <div class="big-letter" style="color:${item.color}">${item.letter}</div>
-      <span class="animal-emoji">${item.emoji}</span>
+      <span class="animal-emoji">${emojiImg(item.emoji, '2.5rem')}</span>
       <div class="animal-name">${item.animal}</div>
     `;
     card.onclick = () => openDetail(i);
@@ -894,7 +1113,7 @@ function openDetail(index) {
   document.getElementById('detail-letter').innerHTML =
     `${item.letter}<span class="lower">${item.letter.toLowerCase()}</span>`;
   document.getElementById('detail-letter').style.color = item.color;
-  document.getElementById('detail-animal').textContent = item.emoji;
+  document.getElementById('detail-animal').innerHTML = emojiImg(item.emoji, '5rem');
   document.getElementById('detail-name').textContent = item.animal;
   document.getElementById('detail-phrase').textContent = `"${item.letter} is for ${item.animal}!"`;
   document.getElementById('detail-overlay').classList.add('show');
@@ -919,7 +1138,7 @@ function navRandom() {
 function closeDetail(e) {
   if (e && e.target !== document.getElementById('detail-overlay')) return;
   document.getElementById('detail-overlay').classList.remove('show');
-  speechSynthesis.cancel();
+  stopSpeech();
 }
 
 function speakCurrent() {
@@ -960,11 +1179,11 @@ function renderRound() {
 
   area.innerHTML = `
     <div class="game-prompt">Which letter does this animal start with?</div>
-    <div class="game-animal">${item.emoji}</div>
+    <div class="game-animal">${emojiImg(item.emoji, '1em')}</div>
     <div class="game-question">${item.animal}</div>
     <div class="game-options" id="game-options"></div>
     <div class="game-result" id="game-result"></div>
-    <button class="next-btn" id="next-btn" onclick="nextRound()">Next ➡</button>
+    <button class="next-btn" id="next-btn" onclick="nextRound()">Next &#10142;</button>
   `;
 
   const optsContainer = document.getElementById('game-options');
@@ -990,7 +1209,7 @@ function handleAnswer(btn, chosen, correct) {
     gameScore++;
     document.getElementById('score').textContent = gameScore;
     const result = document.getElementById('game-result');
-    result.textContent = '🎉 Correct! ' + correct.letter + ' is for ' + correct.animal + '!';
+    result.innerHTML = emojiImg(EMOJI_ICONS.party, '1em') + ' Correct! ' + correct.letter + ' is for ' + correct.animal + '!';
     result.style.color = '#6BCB77';
     result.classList.add('show');
     celebrate();
@@ -1019,11 +1238,11 @@ function nextRound() {
 function celebrate() {
   const container = document.getElementById('star-celebration');
   container.innerHTML = '';
-  const emojis = ['⭐','✨','🌟','💫','🎉'];
+  const starEmojis = [EMOJI_ICONS.star, EMOJI_ICONS.sparkle, EMOJI_ICONS.star2, EMOJI_ICONS.dizzy, EMOJI_ICONS.party];
   for (let i = 0; i < 12; i++) {
     const star = document.createElement('div');
     star.className = 'star-particle';
-    star.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    star.innerHTML = emojiImg(starEmojis[Math.floor(Math.random() * starEmojis.length)], '2rem');
     star.style.left = (40 + Math.random() * 20) + 'vw';
     star.style.top = (40 + Math.random() * 20) + 'vh';
     star.style.setProperty('--dx', (Math.random() * 400 - 200) + 'px');
@@ -1047,7 +1266,7 @@ function restartGame() {
 
 function endGame() {
   document.getElementById('game-finished').classList.remove('show');
-  speechSynthesis.cancel();
+  stopSpeech();
 }
 
 // ===== Keyboard support =====
@@ -1058,6 +1277,17 @@ document.addEventListener('keydown', (e) => {
     }
   }
 });
+
+// ===== Initialize voice status =====
+// Test online TTS availability on load (silently)
+setTimeout(() => {
+  if (ttsMode === 'unknown') {
+    // Try a quick check
+    fetch(`${ONLINE_TTS_URL}?voice=${ONLINE_TTS_VOICE}&text=hi`, { method: 'HEAD' })
+      .then(() => { ttsMode = 'online'; updateVoiceBadge(); })
+      .catch(() => { ttsMode = 'local'; updateVoiceBadge(); });
+  }
+}, 2000);
 </script>
 </body>
 </html>
