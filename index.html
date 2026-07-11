@@ -866,182 +866,84 @@ function showScreen(id) {
   if (id === 'play-screen') initGame();
 }
 
-// ===== TTS: Hybrid Online + Local =====
-let ttsMode = 'unknown'; // 'online' | 'local' | 'fallback'
+// ===== TTS: Local MP3 (letters) + Web Speech API (dynamic phrases) =====
+let ttsMode = 'unknown';
 let currentAudio = null;
-
-// Online TTS via StreamElements API (free, returns MP3, high-quality Amazon Polly voices)
-const ONLINE_TTS_URL = 'https://api.streamelements.com/kappa/v2/speech';
-const ONLINE_TTS_VOICE = 'Ivy'; // child-like female voice, perfect for kids' app
-
-// Local Web Speech API voice selection
 let voices = [];
 const PREFERRED_VOICE_PATTERNS = [
-  // Chrome remote voices (highest quality in Chrome)
-  'google us english',
-  'google uk english female',
-  'google uk english male',
-  // Edge / Windows neural voices
-  'microsoft aria',
-  'microsoft jenny',
-  'microsoft michelle',
-  'microsoft sara',
-  'microsoft ana',
-  // macOS / iOS natural voices
-  'samantha',
-  'victoria',
-  'karen',
-  'tessa',
-  'fiona',
-  'moira',
-  // Android Google TTS
-  'en-us',
-  // Windows SAPI voices (fallback)
-  'microsoft zira',
-  'microsoft sara',
-  'microsoft eva',
+  'google us english', 'google uk english female', 'google uk english male',
+  'microsoft aria', 'microsoft jenny', 'microsoft michelle', 'microsoft sara', 'microsoft ana',
+  'samantha', 'victoria', 'karen', 'tessa', 'fiona', 'moira',
+  'en-us', 'microsoft zira', 'microsoft eva',
 ];
-
-function loadVoices() {
-  voices = speechSynthesis.getVoices();
-  updateVoiceBadge();
-}
+function loadVoices() { voices = speechSynthesis.getVoices(); }
 loadVoices();
 if (speechSynthesis.onvoiceschanged !== undefined) {
   speechSynthesis.onvoiceschanged = loadVoices;
 }
-
 function pickBestVoice() {
   const isEn = v => v.lang && v.lang.toLowerCase().startsWith('en');
   const enVoices = voices.filter(isEn);
   if (enVoices.length === 0) return voices[0] || null;
-
-  // Try preferred patterns in order
   for (const pattern of PREFERRED_VOICE_PATTERNS) {
     const match = enVoices.find(v => v.name.toLowerCase().includes(pattern));
     if (match) return match;
   }
-
-  // Prefer female-sounding names
-  const femaleNames = ['female', 'woman', 'samantha', 'victoria', 'karen', 'zira', 'eva', 'sara', 'aria', 'jenny', 'michelle', 'ana'];
+  const femaleNames = ['female','woman','samantha','victoria','karen','zira','eva','sara','aria','jenny','michelle','ana'];
   for (const name of femaleNames) {
     const match = enVoices.find(v => v.name.toLowerCase().includes(name));
     if (match) return match;
   }
-
-  // Prefer voices with "natural" or "premium" in name
-  const premium = enVoices.find(v => v.name.toLowerCase().includes('natural') || v.name.toLowerCase().includes('premium'));
-  if (premium) return premium;
-
   return enVoices[0];
 }
-
 function updateVoiceBadge() {
   const dot = document.getElementById('voice-dot');
   const label = document.getElementById('voice-label');
-  if (ttsMode === 'online') {
-    dot.className = 'dot online';
-    label.textContent = 'Online voice';
-  } else if (ttsMode === 'local') {
+  if (!dot || !label) return;
+  if (ttsMode === 'mp3') { dot.className = 'dot online'; label.textContent = 'Consistent audio'; }
+  else if (ttsMode === 'local') {
     const v = pickBestVoice();
     dot.className = 'dot local';
     label.textContent = v ? v.name.substring(0, 20) : 'Local voice';
-  } else if (ttsMode === 'fallback') {
-    dot.className = 'dot fallback';
-    label.textContent = 'Basic voice';
-  } else {
-    dot.className = 'dot fallback';
-    label.textContent = 'Loading voice...';
-  }
+  } else { dot.className = 'dot fallback'; label.textContent = 'Loading voice...'; }
 }
-
-function speak(text, rate = 0.85, pitch = 1.2) {
-  // Cancel any ongoing speech
+function speakLetter(item) {
   stopSpeech();
-
-  // Try online TTS first for consistent quality across all devices
-  speakOnline(text).catch(() => {
-    // Fall back to local Web Speech API
-    speakLocal(text, rate, pitch);
-  });
+  const url = `audio/${item.letter}.mp3`;
+  currentAudio = new Audio(url);
+  ttsMode = 'mp3';
+  updateVoiceBadge();
+  currentAudio.onended = () => { currentAudio = null; };
+  currentAudio.onerror = () => { currentAudio = null; speakLocal(`${item.letter}, ${item.animal}`, 0.8, 1.3); };
+  currentAudio.play().catch(() => { currentAudio = null; speakLocal(`${item.letter}, ${item.animal}`, 0.8, 1.3); });
 }
-
-function speakOnline(text) {
-  return new Promise((resolve, reject) => {
-    const url = `${ONLINE_TTS_URL}?voice=${ONLINE_TTS_VOICE}&text=${encodeURIComponent(text)}`;
-
-    // Quick connectivity check with a timeout
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3000);
-
-    fetch(url, { signal: controller, method: 'HEAD' })
-      .then(() => {
-        clearTimeout(timeout);
-        // URL is reachable - play the audio
-        currentAudio = new Audio(url);
-        currentAudio.crossOrigin = 'anonymous';
-        ttsMode = 'online';
-        updateVoiceBadge();
-
-        currentAudio.onended = () => { currentAudio = null; resolve(); };
-        currentAudio.onerror = () => {
-          currentAudio = null;
-          ttsMode = 'local';
-          reject(new Error('Audio playback failed'));
-        };
-        currentAudio.play().catch(() => {
-          currentAudio = null;
-          ttsMode = 'local';
-          reject(new Error('Play failed'));
-        });
-      })
-      .catch(() => {
-        clearTimeout(timeout);
-        ttsMode = 'local';
-        reject(new Error('Online TTS unavailable'));
-      });
-  });
+function speak(text, rate = 0.85, pitch = 1.2) {
+  stopSpeech();
+  speakLocal(text, rate, pitch);
 }
-
 function speakLocal(text, rate, pitch) {
-  if (!('speechSynthesis' in window)) {
-    ttsMode = 'fallback';
-    updateVoiceBadge();
-    return;
-  }
-
+  if (!('speechSynthesis' in window)) { ttsMode = 'fallback'; updateVoiceBadge(); return; }
   const u = new SpeechSynthesisUtterance(text);
-  u.rate = rate;
-  u.pitch = pitch;
-  u.volume = 1;
+  u.rate = rate; u.pitch = pitch; u.volume = 1;
   const v = pickBestVoice();
-  if (v) {
-    u.voice = v;
-    u.lang = v.lang;
-  }
+  if (v) { u.voice = v; u.lang = v.lang; }
   ttsMode = v ? 'local' : 'fallback';
   updateVoiceBadge();
   speechSynthesis.speak(u);
 }
-
 function stopSpeech() {
-  // Stop online audio
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio = null;
-  }
-  // Stop local speech
-  if ('speechSynthesis' in window) {
-    speechSynthesis.cancel();
-  }
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+}
+function testVoice() {
+  currentAudio = new Audio('audio/F.mp3');
+  currentAudio.onended = () => { currentAudio = null; };
+  currentAudio.play().catch(() => {});
 }
 
-function testVoice() {
-  speak('Hello! I am your ABC Animals teacher. Let us learn together!');
-}
 
 function speakLetterAndAnimal(item) {
-  speak(`${item.letter}, ${item.letter} for ${item.animal}`, 0.8, 1.3);
+  speakLetter(item);
 }
 
 // ===== Bubbles Background =====
