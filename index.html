@@ -25,7 +25,7 @@ html, body {
 }
 
 body {
-  background: linear-gradient(135deg, #FFF3E0 0%, #FFE4F0 25%, #E0F7FA 50%, #F1FFE0 75%, #FFFDE7 100%);
+  background: linear-gradient(135deg, #E8F4FF 0%, #D6EAF8 20%, #EBF5FB 40%, #E8F8F5 60%, #F0F8FF 80%, #E3F2FD 100%);
   background-size: 400% 400%;
   animation: bgShift 20s ease-in-out infinite;
   position: relative;
@@ -37,21 +37,61 @@ body {
   50% { background-position: 100% 50%; }
 }
 
-/* Floating background bubbles */
-.bubble {
+/* Falling snowflakes */
+.snowflake {
   position: fixed;
-  border-radius: 50%;
-  opacity: 0.35;
   pointer-events: none;
   z-index: 0;
-  animation: floatUp linear infinite;
+  color: #B0D4F1;
+  text-shadow: 0 0 6px rgba(176,212,241,0.5);
+  animation: snowFall linear infinite;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-@keyframes floatUp {
-  0% { transform: translateY(100vh) scale(0.8); opacity: 0; }
-  10% { opacity: 0.35; }
-  90% { opacity: 0.2; }
-  100% { transform: translateY(-20vh) scale(1.2); opacity: 0; }
+@keyframes snowFall {
+  0% {
+    transform: translateY(-10vh) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(110vh) translateX(var(--drift, 50px)) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Princess characters on home screen */
+.princess-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1rem;
+  margin: 1rem 0;
+  position: relative;
+  z-index: 1;
+}
+
+.princess-img {
+  width: clamp(80px, 15vw, 140px);
+  height: auto;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
+  animation: princessFloat 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.princess-img.right {
+  animation-delay: 1.5s;
+}
+
+@keyframes princessFloat {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-8px) rotate(2deg); }
 }
 
 /* ---- Screen System ---- */
@@ -945,8 +985,12 @@ body {
 <!-- ============ HOME SCREEN ============ -->
 <div class="screen active" id="home-screen">
   <div class="home-content">
+    <div class="princess-container">
+      <img src="ice-queen.png" class="princess-img" alt="Ice Princess">
+      <img src="brave-princess.png" class="princess-img right" alt="Brave Princess">
+    </div>
     <h1 class="home-title">ABC Animals!</h1>
-    <p class="home-subtitle"><span class="parrot">🦜</span> Let's learn our letters together!</p>
+    <p class="home-subtitle"><span class="parrot">❄</span> Let's learn our letters together!</p>
     <div class="mode-buttons">
       <button class="mode-btn learn" onclick="showScreen('learn-screen')">
         <span class="icon">📖</span>
@@ -1136,24 +1180,24 @@ function speakLetterSound(letter) {
   speak(letter, 0.7, 1.5);
 }
 
-// ===== Bubbles Background =====
-function createBubbles() {
+// ===== Snowflakes Background =====
+function createSnowflakes() {
   const container = document.getElementById('bubbles');
-  const colors = ['#FF6B6B','#FFD93D','#6BCB77','#4D96FF','#9D4EDD','#FF6B9D'];
-  for (let i = 0; i < 15; i++) {
-    const b = document.createElement('div');
-    b.className = 'bubble';
-    const size = 30 + Math.random() * 80;
-    b.style.width = size + 'px';
-    b.style.height = size + 'px';
-    b.style.background = colors[i % colors.length];
-    b.style.left = Math.random() * 100 + 'vw';
-    b.style.animationDuration = (15 + Math.random() * 20) + 's';
-    b.style.animationDelay = (Math.random() * 20) + 's';
-    container.appendChild(b);
+  const flakes = ['\u2744', '\u2745', '\u2746', '\u2744', '\u2745']; // ❄ ❅ ❆
+  for (let i = 0; i < 30; i++) {
+    const s = document.createElement('div');
+    s.className = 'snowflake';
+    s.textContent = flakes[Math.floor(Math.random() * flakes.length)];
+    s.style.fontSize = (12 + Math.random() * 28) + 'px';
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.animationDuration = (8 + Math.random() * 12) + 's';
+    s.style.animationDelay = (Math.random() * 10) + 's';
+    s.style.setProperty('--drift', (Math.random() * 200 - 100) + 'px');
+    s.style.opacity = 0.4 + Math.random() * 0.5;
+    container.appendChild(s);
   }
 }
-createBubbles();
+createSnowflakes();
 
 // ===== LEARN MODE =====
 let currentDetailItem = null;
