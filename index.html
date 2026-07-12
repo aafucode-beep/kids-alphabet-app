@@ -57,26 +57,25 @@ body {
   100% { transform: translateY(110vh) translateX(var(--drift, 50px)) rotate(360deg); opacity: 0; }
 }
 
-/* Princess characters on home screen */
+/* Princess character on home screen */
 .princess-container {
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  gap: 1rem;
   margin: 1rem 0;
   position: relative;
   z-index: 1;
 }
 
 .princess-img {
-  width: clamp(80px, 15vw, 140px);
+  width: clamp(120px, 25vw, 220px);
   height: auto;
+  max-height: 35vh;
+  object-fit: contain;
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
   animation: princessFloat 3s ease-in-out infinite;
   pointer-events: none;
 }
-
-.princess-img.right { animation-delay: 1.5s; }
 
 @keyframes princessFloat {
   0%, 100% { transform: translateY(0) rotate(-2deg); }
@@ -853,8 +852,7 @@ body {
     <h1 class="home-title">ABC Animals!</h1>
     <p class="home-subtitle"><span class="parrot" id="parrot-emoji"></span> Let's learn our letters together!</p>
     <div class="princess-container">
-      <img src="elsa.png" class="princess-img" alt="Elsa" onerror="this.style.display='none'">
-      <img src="anna.png" class="princess-img right" alt="Anna" onerror="this.style.display='none'">
+      <img src="princess.avif" class="princess-img" alt="Princess" onerror="this.style.display='none'">
     </div>
     <div class="mode-buttons">
       <button class="mode-btn learn" onclick="showScreen('learn-screen')">
