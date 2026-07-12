@@ -832,6 +832,133 @@ body {
 .match-next-btn:hover { transform: scale(1.05); }
 .match-next-btn:active { transform: translateY(2px); box-shadow: 0 3px 0 #7a3eb5; }
 
+/* ---- Test Mode (Pronunciation) ---- */
+.mode-btn.test { border-top: 6px solid #FFD93D; }
+
+.test-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55); z-index: 200;
+  align-items: center; justify-content: center;
+  padding: 1rem; animation: fadeIn 0.2s;
+}
+.test-overlay.show { display: flex; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.test-card {
+  background: white; border-radius: var(--radius);
+  padding: 1.5rem 1.5rem 1.2rem; max-width: 440px; width: 100%;
+  max-height: 92vh; overflow-y: auto;
+  box-shadow: var(--shadow-deep);
+  position: relative; text-align: center;
+  animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes popIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.test-card .close-btn {
+  position: absolute; top: 10px; right: 12px;
+  background: #eee; border: none; border-radius: 50%;
+  width: 36px; height: 36px; font-size: 1.2rem; cursor: pointer;
+  color: #666; line-height: 1;
+}
+.test-card .close-btn:hover { background: #ddd; }
+
+.test-letter-big {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 14vw, 6rem); line-height: 1;
+  margin: 0.3rem 0 0.5rem;
+}
+.test-animal-img { width: 5rem; height: 5rem; }
+.test-animal-name {
+  font-family: var(--font-display); font-size: 1.6rem; color: #444;
+  margin-top: 0.2rem;
+}
+.test-prompt {
+  font-size: 0.95rem; color: #888; margin: 0.8rem 0 0.4rem;
+}
+.test-prompt-text {
+  font-weight: 700; color: #6BCB77;
+  font-family: var(--font-display); font-size: 1.15rem;
+}
+
+.mic-btn {
+  width: 140px; height: 140px; border-radius: 50%;
+  background: linear-gradient(135deg, #FFD93D, #FF8C42);
+  border: none; color: white; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  margin: 1rem auto; box-shadow: 0 8px 0 #d68a1f, var(--shadow-soft);
+  transition: transform 0.15s, box-shadow 0.15s; font-family: inherit;
+}
+.mic-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 0 #d68a1f, var(--shadow-soft); }
+.mic-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #d68a1f, var(--shadow-soft); }
+.mic-btn .mic-icon { font-size: 3rem; line-height: 1; }
+.mic-btn .mic-label { font-family: var(--font-display); font-size: 1rem; margin-top: 4px; }
+.mic-btn.listening {
+  background: linear-gradient(135deg, #FF6B6B, #E63946);
+  box-shadow: 0 8px 0 #b53030, var(--shadow-soft);
+  animation: micPulse 1.2s ease-in-out infinite;
+}
+.mic-btn.listening .mic-icon::before { content: "\23F9"; }
+.mic-btn.listening .mic-icon { font-size: 0; }
+.mic-btn.listening .mic-icon::before { font-size: 3rem; }
+@keyframes micPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.07); }
+}
+.mic-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.test-result { margin-top: 0.5rem; }
+.heard-text {
+  font-size: 0.9rem; color: #888; font-style: italic;
+  background: #f5f5f5; border-radius: 12px; padding: 0.5rem 0.8rem;
+  margin: 0.5rem 0;
+}
+.heard-text span { color: #444; font-style: normal; font-weight: 600; }
+
+.score-display {
+  font-family: var(--font-display);
+  font-size: 3rem; line-height: 1; margin: 0.5rem 0;
+}
+.score-num { color: #6BCB77; }
+.score-num.low { color: #FF8C42; }
+.score-num.bad { color: #FF6B6B; }
+.score-label { font-size: 1.8rem; color: #999; }
+
+.stars { font-size: 2rem; margin: 0.3rem 0; letter-spacing: 4px; }
+.stars .star-on { color: #FFD93D; text-shadow: 0 2px 0 rgba(0,0,0,0.1); }
+.stars .star-off { color: #ddd; }
+
+.feedback {
+  font-family: var(--font-display); font-size: 1.3rem;
+  margin: 0.2rem 0 0.8rem;
+}
+.feedback.great { color: #6BCB77; }
+.feedback.good { color: #4D96FF; }
+.feedback.try { color: #FF8C42; }
+
+.test-nav {
+  display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap;
+  margin-top: 0.8rem;
+}
+.test-nav-btn {
+  background: white; border: 2px solid #ddd; border-radius: 100px;
+  padding: 0.6rem 1.2rem; font-family: var(--font-display);
+  font-size: 1rem; cursor: pointer; color: #555;
+  transition: all 0.15s;
+}
+.test-nav-btn:hover { border-color: #FFD93D; color: #333; }
+.test-nav-btn:active { transform: translateY(2px); }
+.test-nav-btn.primary {
+  background: #FFD93D; border-color: #d68a1f; color: white;
+  box-shadow: 0 4px 0 #d68a1f;
+}
+.test-nav-btn.primary:hover { background: #FFD93D; }
+
+.test-unsupported {
+  background: #FFF3CD; border: 2px solid #FFD93D; border-radius: 18px;
+  padding: 1rem; margin: 1rem 0; color: #856404; font-size: 0.9rem;
+}
+
+
 /* Responsive */
 @media (max-width: 600px) {
   .mode-buttons { gap: 1rem; }
@@ -869,6 +996,11 @@ body {
         <span class="icon" id="icon-match"></span>
         <span class="label">Match</span>
         <span class="desc">Connect big & small letters</span>
+      </button>
+      <button class="mode-btn test" onclick="showScreen('test-screen')">
+        <span class="icon" id="icon-test"></span>
+        <span class="label">Test</span>
+        <span class="desc">Speak & get scored</span>
       </button>
     </div>
   </div>
@@ -1021,6 +1153,7 @@ const EMOJI_ICONS = {
   prev: '25c0',
   next: '25b6',
   link: '1f517',
+  mic: '1f3a4',
 };
 
 // ===== Screen Navigation =====
@@ -1030,6 +1163,7 @@ function showScreen(id) {
   if (id === 'learn-screen') initLearn();
   if (id === 'play-screen') initGame();
   if (id === 'match-screen') initMatchGame();
+  if (id === 'test-screen') initTest();
 }
 
 // ===== TTS: Local MP3 (letters) + Web Speech API (dynamic phrases) =====
@@ -1136,11 +1270,14 @@ function renderStaticEmojis() {
   document.getElementById('icon-learn').innerHTML = emojiImg(EMOJI_ICONS.book, '1em');
   document.getElementById('icon-play').innerHTML = emojiImg(EMOJI_ICONS.game, '1em');
   document.getElementById('icon-match').innerHTML = emojiImg(EMOJI_ICONS.link, '1em');
+  document.getElementById('icon-test').innerHTML = emojiImg(EMOJI_ICONS.mic, '1em');
+  document.getElementById('mic-icon').innerHTML = emojiImg(EMOJI_ICONS.mic, '1em');
 
   // Back buttons (use arrow character, no emoji needed)
   document.getElementById('back-btn-learn').innerHTML = '&#8592;';
   document.getElementById('back-btn-play').innerHTML = '&#8592;';
   document.getElementById('back-btn-match').innerHTML = '&#8592;';
+  document.getElementById('back-btn-test').innerHTML = '&#8592;';
 
   // Speak button
   document.getElementById('speak-btn-detail').innerHTML = emojiImg(EMOJI_ICONS.speaker, '1.1em') + ' Hear it again!';
@@ -1576,6 +1713,325 @@ setTimeout(() => {
     updateVoiceBadge();
   }
 }, 2000);
+
+// ===== TEST MODE: Pronunciation scoring =====
+let testCurrentIndex = 0;
+let recognition = null;
+let isListening = false;
+let lastTranscript = '';
+
+function initTest() {
+  const grid = document.getElementById('test-grid');
+  if (grid.children.length > 0) return;
+  ALPHABET.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'letter-card';
+    card.style.setProperty('--i', i);
+    card.style.borderTop = `5px solid ${item.color}`;
+    card.innerHTML = `
+      <div class="big-letter" style="color:${item.color}">${item.letter}</div>
+      <span class="animal-emoji">${animalImg(item, '2.5rem')}</span>
+      <div class="animal-name">${item.animal}</div>
+    `;
+    card.onclick = () => openTest(i);
+    grid.appendChild(card);
+  });
+}
+
+function openTest(index) {
+  testCurrentIndex = ((index % ALPHABET.length) + ALPHABET.length) % ALPHABET.length;
+  const item = ALPHABET[testCurrentIndex];
+  document.getElementById('test-letter-big').textContent = item.letter;
+  document.getElementById('test-letter-big').style.color = item.color;
+  const img = document.getElementById('test-animal-img');
+  img.src = item.img3d;
+  img.alt = item.animal;
+  document.getElementById('test-animal-name').textContent = item.animal;
+  document.getElementById('test-prompt-text').textContent = `${item.letter}, ${item.animal}`;
+  resetTestUI();
+  document.getElementById('test-overlay').classList.add('show');
+}
+
+function closeTest() {
+  stopListening();
+  document.getElementById('test-overlay').classList.remove('show');
+}
+
+function resetTestUI() {
+  document.getElementById('test-result').style.display = 'none';
+  document.getElementById('test-try-btn').style.display = 'none';
+  setMicState('idle');
+  lastTranscript = '';
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    document.getElementById('mic-btn').disabled = true;
+    document.getElementById('mic-label').textContent = 'Not supported';
+  }
+}
+
+function testPrev() { openTest(testCurrentIndex - 1); }
+function testNext() { openTest(testCurrentIndex + 1); }
+function testTryAgain() { resetTestUI(); }
+
+function toggleListening() {
+  if (isListening) stopListening();
+  else startListening();
+}
+
+function startListening() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    showTestError('Sorry, your browser does not support voice recognition. Try Chrome.');
+    return;
+  }
+  if (isListening) return;
+  try {
+    recognition = new SR();
+    recognition.lang = 'en-US';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 3;
+
+    recognition.onstart = () => {
+      isListening = true;
+      setMicState('listening');
+    };
+
+    recognition.onresult = (event) => {
+      const alts = [];
+      for (let i = 0; i < event.results.length; i++) {
+        for (let j = 0; j < event.results[i].length; j++) {
+          alts.push({
+            transcript: event.results[i][j].transcript,
+            confidence: event.results[i][j].confidence
+          });
+        }
+      }
+      lastTranscript = alts[0].transcript;
+      scoreAndShow(alts);
+    };
+
+    recognition.onerror = (event) => {
+      const msg = event.error === 'not-allowed' ? 'Microphone permission denied.'
+                : event.error === 'no-speech' ? 'I did not hear anything. Try again!'
+                : event.error === 'audio-capture' ? 'No microphone found.'
+                : 'Error: ' + event.error;
+      showTestError(msg);
+      isListening = false;
+      setMicState('idle');
+    };
+
+    recognition.onend = () => {
+      isListening = false;
+      // If no result was captured, reset
+      if (document.getElementById('test-result').style.display === 'none') {
+        setMicState('idle');
+      }
+    };
+
+    recognition.start();
+  } catch (e) {
+    showTestError('Could not start: ' + e.message);
+    isListening = false;
+    setMicState('idle');
+  }
+}
+
+function stopListening() {
+  if (recognition) {
+    try { recognition.stop(); } catch (e) {}
+  }
+  isListening = false;
+  setMicState('idle');
+}
+
+function setMicState(state) {
+  const btn = document.getElementById('mic-btn');
+  const label = document.getElementById('mic-label');
+  if (state === 'listening') {
+    btn.classList.add('listening');
+    label.textContent = 'Listening...';
+  } else {
+    btn.classList.remove('listening');
+    label.textContent = 'Tap to Speak';
+  }
+}
+
+function showTestError(msg) {
+  const result = document.getElementById('test-result');
+  result.style.display = 'block';
+  document.getElementById('heard-text').textContent = msg;
+  document.getElementById('score-num').textContent = '—';
+  document.getElementById('score-num').className = 'score-num';
+  document.getElementById('stars').innerHTML = '<span class="star-off">\u2605</span>'.repeat(3);
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('test-try-btn').style.display = 'inline-block';
+}
+
+function scoreAndShow(alternatives) {
+  const item = ALPHABET[testCurrentIndex];
+  // Use the best matching alternative
+  let best = alternatives[0];
+  let bestScore = computeScore(best.transcript, item);
+  for (const alt of alternatives) {
+    const s = computeScore(alt.transcript, item);
+    if (s > bestScore) { bestScore = s; best = alt; }
+  }
+  const finalScore = Math.round(bestScore);
+  const transcript = best.transcript;
+
+  // Display result
+  document.getElementById('test-result').style.display = 'block';
+  document.getElementById('heard-text').textContent = transcript;
+  const numEl = document.getElementById('score-num');
+  numEl.textContent = finalScore;
+  numEl.className = 'score-num' + (finalScore >= 80 ? '' : finalScore >= 50 ? ' low' : ' bad');
+
+  // Stars
+  const stars = finalScore >= 80 ? 3 : finalScore >= 50 ? 2 : 1;
+  let starsHtml = '';
+  for (let i = 0; i < 3; i++) {
+    starsHtml += i < stars
+      ? '<span class="star-on">\u2605</span>'
+      : '<span class="star-off">\u2605</span>';
+  }
+  document.getElementById('stars').innerHTML = starsHtml;
+
+  // Feedback
+  const fb = document.getElementById('feedback');
+  if (finalScore >= 90) {
+    fb.textContent = 'Perfect!';
+    fb.className = 'feedback great';
+  } else if (finalScore >= 70) {
+    fb.textContent = 'Great job!';
+    fb.className = 'feedback great';
+  } else if (finalScore >= 50) {
+    fb.textContent = 'Good try!';
+    fb.className = 'feedback good';
+  } else {
+    fb.textContent = 'Try again!';
+    fb.className = 'feedback try';
+  }
+
+  document.getElementById('test-try-btn').style.display = 'inline-block';
+  setMicState('idle');
+}
+
+function computeScore(transcript, item) {
+  const t = transcript.toLowerCase().trim().replace(/[^a-z\s]/g, '');
+  if (!t) return 0;
+  const words = t.split(/\s+/).filter(Boolean);
+  // Letter match (accept letter name or letter itself)
+  const letterAliases = letterAliasesFor(item.letter);
+  let letterHit = false;
+  for (const w of words) {
+    for (const alias of letterAliases) {
+      if (w === alias || similarity(w, alias) >= 0.75) { letterHit = true; break; }
+    }
+    if (letterHit) break;
+  }
+  // Animal match (with fuzzy word match)
+  const animalHit = bestWordMatchScore(words, item.animal.toLowerCase()) >= 0.7;
+  // Score: 40% for letter, 60% for animal
+  return (letterHit ? 40 : 0) + (animalHit ? 60 : 0);
+}
+
+function letterAliasesFor(letter) {
+  // Map letter to its spoken forms
+  const map = {
+    'A': ['a', 'eh', 'ay'], 'B': ['b', 'bee', 'be'], 'C': ['c', 'see', 'si'],
+    'D': ['d', 'dee'], 'E': ['e', 'ee', 'eh'], 'F': ['f', 'ef'],
+    'G': ['g', 'gee', 'ji'], 'H': ['h', 'aitch', 'each'], 'I': ['i', 'eye', 'ay'],
+    'J': ['j', 'jay'], 'K': ['k', 'kay'], 'L': ['l', 'el', 'elle'],
+    'M': ['m', 'em'], 'N': ['n', 'en'], 'O': ['o', 'oh', 'owe'],
+    'P': ['p', 'pee'], 'Q': ['q', 'cue', 'kyu'], 'R': ['r', 'ar', 'are'],
+    'S': ['s', 'ess'], 'T': ['t', 'tee', 'tea'], 'U': ['u', 'you', 'yoo'],
+    'V': ['v', 'vee'], 'W': ['w', 'double', 'you'], 'X': ['x', 'ex'],
+    'Y': ['y', 'why'], 'Z': ['z', 'zee', 'zed']
+  };
+  return map[letter] || [letter.toLowerCase()];
+}
+
+function bestWordMatchScore(words, target) {
+  let best = 0;
+  for (const w of words) {
+    // Direct substring (e.g., "alligator" in "the alligator")
+    if (w.includes(target) || target.includes(w)) {
+      best = Math.max(best, Math.min(w.length, target.length) / Math.max(w.length, target.length));
+    }
+    best = Math.max(best, similarity(w, target));
+  }
+  return best;
+}
+
+function similarity(a, b) {
+  // Levenshtein-based similarity ratio (0-1)
+  if (!a || !b) return 0;
+  const longer = a.length > b.length ? a : b;
+  if (longer.length === 0) return 1;
+  return (longer.length - levenshtein(a, b)) / longer.length;
+}
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  if (m === 0) return n;
+  if (n === 0) return m;
+  const dp = new Array(n + 1);
+  for (let j = 0; j <= n; j++) dp[j] = j;
+  for (let i = 1; i <= m; i++) {
+    let prev = dp[0];
+    dp[0] = i;
+    for (let j = 1; j <= n; j++) {
+      const tmp = dp[j];
+      if (a[i - 1] === b[j - 1]) dp[j] = prev;
+      else dp[j] = 1 + Math.min(prev, dp[j], dp[j - 1]);
+      prev = tmp;
+    }
+  }
+  return dp[n];
+}
+
 </script>
+<!-- ============ TEST SCREEN ============ -->
+<div class="screen" id="test-screen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="showScreen('home-screen')" title="Back" id="back-btn-test">&#8592;</button>
+    <span class="screen-title">Test Your Voice</span>
+    <div style="width:56px"></div>
+  </div>
+  <div class="content-area">
+    <div class="letter-grid" id="test-grid"></div>
+  </div>
+</div>
+
+<!-- Test overlay (pronunciation scoring) -->
+<div class="test-overlay" id="test-overlay" onclick="if(event.target===this)closeTest()">
+  <div class="test-card">
+    <button class="close-btn" onclick="closeTest()" title="Close">&#10005;</button>
+    <div class="test-letter-big" id="test-letter-big"></div>
+    <img id="test-animal-img" class="test-animal-img" alt="">
+    <div class="test-animal-name" id="test-animal-name"></div>
+    <div class="test-prompt">Say: "<span class="test-prompt-text" id="test-prompt-text"></span>"</div>
+    <button class="mic-btn" id="mic-btn" onclick="toggleListening()">
+      <span class="mic-icon" id="mic-icon"></span>
+      <span class="mic-label" id="mic-label">Tap to Speak</span>
+    </button>
+    <div class="test-result" id="test-result" style="display:none">
+      <div class="heard-text">I heard: <span id="heard-text"></span></div>
+      <div class="score-display">
+        <span class="score-num" id="score-num">0</span><span class="score-label">%</span>
+      </div>
+      <div class="stars" id="stars"></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+    <div class="test-nav">
+      <button class="test-nav-btn" onclick="testPrev()" id="test-prev-btn">&#9664; Prev</button>
+      <button class="test-nav-btn primary" onclick="testTryAgain()" id="test-try-btn" style="display:none">Try Again</button>
+      <button class="test-nav-btn" onclick="testNext()" id="test-next-btn">Next &#9654;</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
