@@ -311,6 +311,17 @@ body {
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+}
+
+.letter-card .emoji-img {
+  pointer-events: none;
+  -webkit-user-drag: none;
 }
 
 .letter-card:nth-child(n) { animation-delay: calc(var(--i) * 0.03s); }
@@ -1176,10 +1187,18 @@ const PREFERRED_VOICE_PATTERNS = [
   'samantha', 'victoria', 'karen', 'tessa', 'fiona', 'moira',
   'en-us', 'microsoft zira', 'microsoft eva',
 ];
-function loadVoices() { voices = speechSynthesis.getVoices(); }
-loadVoices();
-if (speechSynthesis.onvoiceschanged !== undefined) {
-  speechSynthesis.onvoiceschanged = loadVoices;
+function loadVoices() {
+  if (!('speechSynthesis' in window)) {
+    voices = [];
+    return;
+  }
+  voices = window.speechSynthesis.getVoices();
+}
+if ('speechSynthesis' in window) {
+  loadVoices();
+  if (window.speechSynthesis.onvoiceschanged !== undefined) {
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+  }
 }
 function pickBestVoice() {
   const isEn = v => v.lang && v.lang.toLowerCase().startsWith('en');
@@ -1264,33 +1283,43 @@ function createSnowflakes() {
 createSnowflakes();
 
 // ===== Render UI Emoji Icons =====
+function setHTMLIfPresent(id, html) {
+  const element = document.getElementById(id);
+  if (element) element.innerHTML = html;
+}
+
 function renderStaticEmojis() {
   // Home screen icons
-  document.getElementById('parrot-emoji').innerHTML = emojiImg(EMOJI_ICONS.parrot, '1.5em');
-  document.getElementById('icon-learn').innerHTML = emojiImg(EMOJI_ICONS.book, '1em');
-  document.getElementById('icon-play').innerHTML = emojiImg(EMOJI_ICONS.game, '1em');
-  document.getElementById('icon-match').innerHTML = emojiImg(EMOJI_ICONS.link, '1em');
-  document.getElementById('icon-test').innerHTML = emojiImg(EMOJI_ICONS.mic, '1em');
-  document.getElementById('mic-icon').innerHTML = emojiImg(EMOJI_ICONS.mic, '1em');
+  setHTMLIfPresent('parrot-emoji', emojiImg(EMOJI_ICONS.parrot, '1.5em'));
+  setHTMLIfPresent('icon-learn', emojiImg(EMOJI_ICONS.book, '1em'));
+  setHTMLIfPresent('icon-play', emojiImg(EMOJI_ICONS.game, '1em'));
+  setHTMLIfPresent('icon-match', emojiImg(EMOJI_ICONS.link, '1em'));
+  setHTMLIfPresent('icon-test', emojiImg(EMOJI_ICONS.mic, '1em'));
+  setHTMLIfPresent('mic-icon', emojiImg(EMOJI_ICONS.mic, '1em'));
 
   // Back buttons (use arrow character, no emoji needed)
-  document.getElementById('back-btn-learn').innerHTML = '&#8592;';
-  document.getElementById('back-btn-play').innerHTML = '&#8592;';
-  document.getElementById('back-btn-match').innerHTML = '&#8592;';
-  document.getElementById('back-btn-test').innerHTML = '&#8592;';
+  setHTMLIfPresent('back-btn-learn', '&#8592;');
+  setHTMLIfPresent('back-btn-play', '&#8592;');
+  setHTMLIfPresent('back-btn-match', '&#8592;');
+  setHTMLIfPresent('back-btn-test', '&#8592;');
 
   // Speak button
-  document.getElementById('speak-btn-detail').innerHTML = emojiImg(EMOJI_ICONS.speaker, '1.1em') + ' Hear it again!';
+  setHTMLIfPresent('speak-btn-detail', emojiImg(EMOJI_ICONS.speaker, '1.1em') + ' Hear it again!');
 
   // Trophy
-  document.getElementById('trophy-emoji').innerHTML = emojiImg(EMOJI_ICONS.trophy, '1em');
-  document.getElementById('match-trophy-emoji').innerHTML = emojiImg(EMOJI_ICONS.trophy, '1em');
+  setHTMLIfPresent('trophy-emoji', emojiImg(EMOJI_ICONS.trophy, '1em'));
+  setHTMLIfPresent('match-trophy-emoji', emojiImg(EMOJI_ICONS.trophy, '1em'));
 
   // Play again button
-  document.getElementById('play-again-btn').innerHTML = emojiImg(EMOJI_ICONS.game, '1em') + ' Play Again';
-  document.getElementById('match-play-again-btn').innerHTML = emojiImg(EMOJI_ICONS.game, '1em') + ' Play Again';
+  setHTMLIfPresent('play-again-btn', emojiImg(EMOJI_ICONS.game, '1em') + ' Play Again');
+  setHTMLIfPresent('match-play-again-btn', emojiImg(EMOJI_ICONS.game, '1em') + ' Play Again');
 }
-renderStaticEmojis();
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderStaticEmojis);
+} else {
+  renderStaticEmojis();
+}
 
 // ===== LEARN MODE =====
 let currentDetailIndex = 0;
@@ -1300,8 +1329,10 @@ function initLearn() {
   const grid = document.getElementById('letter-grid');
   if (grid.children.length > 0) return; // already built
   ALPHABET.forEach((item, i) => {
-    const card = document.createElement('div');
+    const card = document.createElement('button');
     card.className = 'letter-card';
+    card.type = 'button';
+    card.setAttribute('aria-label', `${item.letter} for ${item.animal}`);
     card.style.setProperty('--i', i);
     card.style.borderTop = `5px solid ${item.color}`;
     card.innerHTML = `
@@ -1309,7 +1340,7 @@ function initLearn() {
       <span class="animal-emoji">${animalImg(item, '2.5rem')}</span>
       <div class="animal-name">${item.animal}</div>
     `;
-    card.onclick = () => openDetail(i);
+    card.addEventListener('click', () => openDetail(i));
     grid.appendChild(card);
   });
 }
@@ -1724,8 +1755,10 @@ function initTest() {
   const grid = document.getElementById('test-grid');
   if (grid.children.length > 0) return;
   ALPHABET.forEach((item, i) => {
-    const card = document.createElement('div');
+    const card = document.createElement('button');
     card.className = 'letter-card';
+    card.type = 'button';
+    card.setAttribute('aria-label', `${item.letter} for ${item.animal}`);
     card.style.setProperty('--i', i);
     card.style.borderTop = `5px solid ${item.color}`;
     card.innerHTML = `
@@ -1733,7 +1766,7 @@ function initTest() {
       <span class="animal-emoji">${animalImg(item, '2.5rem')}</span>
       <div class="animal-name">${item.animal}</div>
     `;
-    card.onclick = () => openTest(i);
+    card.addEventListener('click', () => openTest(i));
     grid.appendChild(card);
   });
 }
